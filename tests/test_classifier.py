@@ -1,13 +1,13 @@
 from pytorch_lightning import Trainer, seed_everything
-from NNP.nnp import LitClassifier
-from NNP.datasets.mnist import mnist
+from NNP.nnp import NNPLightningModel
+from NNP.nnp import NNPDataModule
 
 
 def test_lit_classifier():
     seed_everything(1234)
 
-    model = LitClassifier()
-    train, val, test = mnist()
+    model = NNPLightningModel()
+    train, val = NNPDataModule
     trainer = Trainer(limit_train_batches=50, limit_val_batches=20, max_epochs=2)
     trainer.fit(model, train, val)
 
