@@ -9,8 +9,8 @@ setup(
     author='',
     author_email='',
     # REPLACE WITH YOUR OWN GITHUB PROJECT LINK
-    url='https://github.com/PyTorchLightning/pytorch-lightning-conference-seed',
-    install_requires=['pytorch-lightning'],
+    url='https://github.com/rschireman/ANI-NNP-pl',
+    install_requires=['pytorch-lightning', 'torchani'],
     packages=find_packages(),
 )
 
