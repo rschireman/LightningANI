@@ -4,6 +4,8 @@ import torch
 import pytorch_lightning as pl
 import torchani
 import torchani.data
+from pytorch_lightning.loggers import WandbLogger
+import wandb
 
 class NNPDataModule(pl.LightningDataModule):
         def __init__(self, data_dir: str = "./", batch_size: int = 32):
