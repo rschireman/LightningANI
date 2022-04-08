@@ -9,7 +9,7 @@ def test_lit_classifier():
     data = NNPDataModule(data_dir="BTBT-NPT-300K-and-100K.h5'",batch_size=32)
     aev_dim = data.get_aev_dim()
     aev_computer = data.aev_computer
-    model = NNPLightningModel()
-    trainer = Trainer(max_epochs=2, aev_computer=aev_computer, aev_dim=aev_dim)
+    model = NNPLightningModel(aev_computer=aev_computer, aev_dim=aev_dim)
+    trainer = Trainer(max_epochs=2)
     trainer.fit(model, data)
    
