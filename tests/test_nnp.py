@@ -10,7 +10,7 @@ def test_lit_classifier():
     aev_dim = data.get_aev_dim()
     aev_computer = data.aev_computer
     model = NNPLightningModel(aev_computer=aev_computer, aev_dim=aev_dim,learning_rate=1e-5)
-    print(model)
+    print(data)
     trainer = Trainer(max_epochs=2)
     trainer.fit(model, data)
    
