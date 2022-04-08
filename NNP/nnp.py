@@ -50,7 +50,7 @@ class NNPLightningModel(pl.LightningModule):
     def __init__(self, force_coefficient: int = 10, learning_rate: float=1e-4, aev_dim: int=1, aev_computer: torchani.AEVComputer=None):
         super().__init__()
         self.save_hyperparameters()
-
+        self.log('learning_rate',self.hparams.learning_rate)
         self.H_network = torch.nn.Sequential(
             torch.nn.Linear(aev_dim, 160),
             torch.nn.CELU(0.1),
@@ -92,7 +92,6 @@ class NNPLightningModel(pl.LightningModule):
         return parser    
     
     def configure_optimizers(self):
-        print(self.hparams.learning_rate)
         optimizer = torch.optim.Adam(self.parameters(), lr=self.hparams.learning_rate)
         return optimizer
         
@@ -133,7 +132,7 @@ class NNPLightningModel(pl.LightningModule):
         loss = energy_loss + self.force_coefficient * force_loss
         self.log('val_energy_loss', energy_loss)
         self.log('val_force_loss', force_loss)
-        torch.save(self.nn.state_dict(), "./nnp.pt")    
+        torch.save(self.nn.state_dict(), "./nnp.pt.epoch_" + str(self.current_epoch))    
         return loss.float()        
 
 
