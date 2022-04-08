@@ -7,9 +7,5 @@ def test_lit_classifier():
     seed_everything(1234)
 
     model = NNPLightningModel()
-    train, val = NNPDataModule
-    trainer = Trainer(limit_train_batches=50, limit_val_batches=20, max_epochs=2)
-    trainer.fit(model, train, val)
-
-    results = trainer.test(test_dataloaders=test)
-    assert results[0]['test_acc'] > 0.7
+    data = NNPDataModule(data_dir="'C:\\Users\\ray\\Dropbox\\ML\\NNPs\\BPNNs\\torchANI\\100000_steps_100K\\NNP\\BTBT-NPT-300K-and-100K.h5'")
+   
