@@ -12,4 +12,4 @@ def test_nnp():
     model = NNPLightningModel(aev_computer=aev_computer, aev_dim=aev_dim,learning_rate=1e-6)
     trainer = Trainer(max_epochs=1)
     assert data is not None and model is not None and trainer is not None
-    trainer.fit(data,model)
+    trainer.fit(model,data)
