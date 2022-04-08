@@ -86,10 +86,10 @@ class NNPLightningModel(pl.LightningModule):
     def add_model_specific_args(parent_parser):
         parser = ArgumentParser(parents=[parent_parser], add_help=False)
         parser.add_argument('--learning_rate', type=float, default=0.0001)
-        
         return parser    
     
     def configure_optimizers(self):
+        print(self.hparams.learning_rate)
         optimizer = torch.optim.Adam(self.parameters(), lr=self.hparams.learning_rate)
         return optimizer
         
@@ -144,21 +144,22 @@ def cli_main():
     parser = ArgumentParser()
     parser.add_argument('--batch_size', default=32, type=int)
     parser.add_argument('--data_dir', type=str, default="")
+    parser.add_argument('--force_coefficient', type=float, default=10)
     parser = pl.Trainer.add_argparse_args(parser)
     parser = NNPLightningModel.add_model_specific_args(parser)
     args = parser.parse_args()
-
+    
     # ------------
     # data
     # ------------
     data = NNPDataModule(data_dir=args.data_dir, batch_size=args.batch_size)
     aev_dim = data.get_aev_dim()
     aev_computer = data.aev_computer
-
+    
     # ------------
     # model
     # ------------
-    nnp = NNPLightningModel(args.learning_rate, aev_computer=aev_computer, aev_dim=aev_dim)
+    nnp = NNPLightningModel(learning_rate=args.learning_rate, aev_computer=aev_computer, aev_dim=aev_dim)
 
     # ------------
     # training
