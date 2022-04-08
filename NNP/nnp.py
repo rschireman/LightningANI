@@ -3,6 +3,7 @@ import os
 import torch
 import pytorch_lightning as pl
 import torchani
+import torchani.data
 
 class NNPDataModule(pl.LightningDataModule):
         def __init__(self, data_dir: str = "./", batch_size: int = 32):
