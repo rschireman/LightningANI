@@ -1,6 +1,6 @@
 from pytorch_lightning import Trainer, seed_everything
 from NNP.nnp import NNPLightningModel
-from NNP.nnp import NNPDataModule
+from NNP.nnp_data_module import NNPDataModule
 from NNP.nnp_sigmoid import NNPLightningSigmoidModel
 
 
