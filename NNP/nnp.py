@@ -68,9 +68,7 @@ class NNPLightningModel(pl.LightningModule):
         true_forces = batch['forces'].float()
         num_atoms = (species >= 0).sum(dim=1, dtype=true_energies.dtype)
         energies = self.forward(species, coordinates)
-
         forces = -torch.autograd.grad(energies.sum(), coordinates, create_graph=True, retain_graph=True)[0]
-        
         energy_loss = (self.mse(energies, true_energies) / num_atoms.sqrt()).mean()
         force_loss = (self.mse(true_forces, forces).sum(dim=(1, 2)) / num_atoms).mean()
         loss = energy_loss + self.force_coefficient * force_loss
@@ -86,9 +84,7 @@ class NNPLightningModel(pl.LightningModule):
         true_forces = val_batch['forces'].float()
         num_atoms = (species >= 0).sum(dim=1, dtype=true_energies.dtype)
         energies = self.forward(species, coordinates)
-
         forces = -torch.autograd.grad(energies.sum(), coordinates, create_graph=True, retain_graph=True)[0]
-       
         energy_loss = (self.mse(energies, true_energies) / num_atoms.sqrt()).mean()
         force_loss = (self.mse(true_forces, forces).sum(dim=(1, 2)) / num_atoms).mean()
         loss = energy_loss + self.force_coefficient * force_loss
