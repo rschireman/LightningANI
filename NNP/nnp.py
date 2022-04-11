@@ -6,7 +6,7 @@ import torchani
 import torchani.data
 from pytorch_lightning.loggers import WandbLogger
 import wandb
-
+from NNP.nnp_data_module import NNPDataModule
 
 class NNPLightningModel(pl.LightningModule):
     def __init__(self, force_coefficient: int = 10, learning_rate: float=1e-4, aev_dim: int=1, aev_computer: torchani.AEVComputer=None):
