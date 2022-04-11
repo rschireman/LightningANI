@@ -9,7 +9,7 @@ import wandb
 from NNP.nnp_data_module import NNPDataModule
 
 class NNPLightningSigmoidModelDF(pl.LightningModule):
-        def __init__(self, force_coefficient: int = 10, learning_rate: float=1e-4, aev_dim: int=1, aev_computer: torchani.AEVComputer=None):
+        def __init__(self, force_coefficient: int = 10, learning_rate: float=1e-4, aev_dim: int=1, aev_computer: torchani.AEVComputer=None, start_force_training_epoch: int=0):
             super().__init__()
 
             self.H_network = torch.nn.Sequential(
@@ -55,6 +55,7 @@ class NNPLightningSigmoidModelDF(pl.LightningModule):
         def add_model_specific_args(parent_parser):
             parser = ArgumentParser(parents=[parent_parser], add_help=False)
             parser.add_argument('--learning_rate', type=float, default=0.0001)
+            parser.add_argument('--start_force_training_epoch', type=int, default=0)
             return parser        
           
         def configure_optimizers(self):
@@ -69,15 +70,19 @@ class NNPLightningSigmoidModelDF(pl.LightningModule):
             species = batch['species']
             coordinates = batch['coordinates'].float().requires_grad_(True)
             true_energies = batch['energies'].float()
-            true_forces = batch['forces'].float()
             num_atoms = (species >= 0).sum(dim=1, dtype=true_energies.dtype)
             energies = self.forward(species, coordinates)
-            forces = -torch.autograd.grad(energies.sum(), coordinates, create_graph=True, retain_graph=True)[0]           
             energy_loss = (self.mse(energies, true_energies) / num_atoms.sqrt()).mean()
-            force_loss = (self.mse(true_forces, forces).sum(dim=(1, 2)) / num_atoms).mean()
-            loss = energy_loss + self.force_coefficient * force_loss
-            self.log('energy_loss', energy_loss)
-            self.log('force_loss', force_loss)
+            if self.current_epoch >= 2:   
+                torch.set_grad_enabled(True)
+                true_forces = batch['forces'].float()
+                forces = -torch.autograd.grad(energies.sum(), coordinates, create_graph=True, retain_graph=True)[0]
+                force_loss = (self.mse(true_forces, forces).sum(dim=(1, 2)) / num_atoms).mean()
+                loss = energy_loss + self.force_coefficient * force_loss
+                self.log('val_force_loss', force_loss)
+            else:
+                loss = energy_loss
+                self.log('val_energy_loss', energy_loss)        
             return loss.float()
 
         def validation_step(self, val_batch, val_batch_idx):
@@ -87,7 +92,7 @@ class NNPLightningSigmoidModelDF(pl.LightningModule):
             num_atoms = (species >= 0).sum(dim=1, dtype=true_energies.dtype)
             energies = self.forward(species, coordinates)
             energy_loss = (self.mse(energies, true_energies) / num_atoms.sqrt()).mean()
-            if self.current_epoch >= 100:
+            if self.current_epoch >= 2:  
                 torch.set_grad_enabled(True)
                 true_forces = val_batch['forces'].float()
                 forces = -torch.autograd.grad(energies.sum(), coordinates, create_graph=True, retain_graph=True)[0]
@@ -125,7 +130,7 @@ def cli_main():
     # ------------
     # model
     # ------------
-    nnp = NNPLightningSigmoidModelDF(learning_rate=args.learning_rate, aev_computer=aev_computer, aev_dim=aev_dim)
+    nnp = NNPLightningSigmoidModelDF(learning_rate=args.learning_rate, aev_computer=aev_computer, aev_dim=aev_dim,start_force_training_epoch=args.start_force_training_epoch)
 
     # ------------
     # training
