@@ -105,7 +105,7 @@ class NNPLightningSigmoidModelDF(pl.LightningModule):
                 loss = energy_loss
                 self.log('val_energy_loss', energy_loss)
             
-            torch.save(self.nn.state_dict(), "nnp.pt")    
+            # torch.save(self.nn.state_dict(), "./nnp.pt")    
             return loss.float()
 
 def cli_main():
@@ -132,12 +132,12 @@ def cli_main():
     # ------------
     # model
     # ------------
-    nnp = NNPLightningSigmoidModelDF(learning_rate=args.learning_rate, aev_computer=aev_computer, aev_dim=aev_dim,start_force_training_epoch=args.start_force_training_epoch)
+    nnp = NNPLightningSigmoidModelDF(learning_rate=args.learning_rate, aev_computer=aev_computer, aev_dim=aev_dim, start_force_training_epoch=args.start_force_training_epoch)
 
     # ------------
     # training
     # ------------
-    trainer = pl.Trainer.from_argparse_args(args, gpus=1)
+    trainer = pl.Trainer.from_argparse_args(args, gpus=1, max_epochs=10000)
     trainer.fit(nnp, data)
 
     # ------------
