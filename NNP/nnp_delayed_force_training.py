@@ -8,8 +8,7 @@ from pytorch_lightning.loggers import WandbLogger
 import wandb
 from NNP.nnp_data_module import NNPDataModule
 
-
-class NNPLightningSigmoidModel(pl.LightningModule):
+class NNPLightningSigmoidModelDF(pl.LightningModule):
         def __init__(self, force_coefficient: int = 10, learning_rate: float=1e-4, aev_dim: int=1, aev_computer: torchani.AEVComputer=None):
             super().__init__()
 
@@ -82,19 +81,23 @@ class NNPLightningSigmoidModel(pl.LightningModule):
             return loss.float()
 
         def validation_step(self, val_batch, val_batch_idx):
-            torch.set_grad_enabled(True)
             species = val_batch['species']
             coordinates = val_batch['coordinates'].float().requires_grad_(True)
             true_energies = val_batch['energies'].float()
-            true_forces = val_batch['forces'].float()
             num_atoms = (species >= 0).sum(dim=1, dtype=true_energies.dtype)
             energies = self.forward(species, coordinates)
-            forces = -torch.autograd.grad(energies.sum(), coordinates, create_graph=True, retain_graph=True)[0]
             energy_loss = (self.mse(energies, true_energies) / num_atoms.sqrt()).mean()
-            force_loss = (self.mse(true_forces, forces).sum(dim=(1, 2)) / num_atoms).mean()
-            loss = energy_loss + self.force_coefficient * force_loss
-            self.log('val_energy_loss', energy_loss)
-            self.log('val_force_loss', force_loss)
+            if self.current_epoch >= 100:
+                torch.set_grad_enabled(True)
+                true_forces = val_batch['forces'].float()
+                forces = -torch.autograd.grad(energies.sum(), coordinates, create_graph=True, retain_graph=True)[0]
+                force_loss = (self.mse(true_forces, forces).sum(dim=(1, 2)) / num_atoms).mean()
+                loss = energy_loss + self.force_coefficient * force_loss
+                self.log('val_force_loss', force_loss)
+            else:
+                loss = energy_loss
+                self.log('val_energy_loss', energy_loss)
+            
             torch.save(self.nn.state_dict(), "nnp.pt")    
             return loss.float()
 
@@ -109,7 +112,7 @@ def cli_main():
     parser.add_argument('--data_dir', type=str, default="")
     parser.add_argument('--force_coefficient', type=float, default=10)
     parser = pl.Trainer.add_argparse_args(parser)
-    parser = NNPLightningSigmoidModel.add_model_specific_args(parser)
+    parser = NNPLightningSigmoidModelDF.add_model_specific_args(parser)
     args = parser.parse_args()
     
     # ------------
@@ -122,7 +125,7 @@ def cli_main():
     # ------------
     # model
     # ------------
-    nnp = NNPLightningSigmoidModel(learning_rate=args.learning_rate, aev_computer=aev_computer, aev_dim=aev_dim)
+    nnp = NNPLightningSigmoidModelDF(learning_rate=args.learning_rate, aev_computer=aev_computer, aev_dim=aev_dim)
 
     # ------------
     # training
