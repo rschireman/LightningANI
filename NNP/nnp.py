@@ -124,7 +124,7 @@ def cli_main():
     # ------------
     # training
     # ------------
-    trainer = pl.Trainer.from_argparse_args(args, gpus=1)
+    trainer = pl.Trainer.from_argparse_args(args, gpus=1, max_epochs=10000)
     trainer.fit(nnp, data)
 
     # ------------
