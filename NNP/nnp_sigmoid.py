@@ -49,7 +49,7 @@ class NNPLightningSigmoidModel(pl.LightningModule):
 
             self.nn = torchani.ANIModel([self.H_network, self.C_network, self.S_network])
             self.model = torchani.nn.Sequential(aev_computer, self.nn)
-
+            self.learning_rate = learning_rate
             self.force_coefficient = force_coefficient
         
         @staticmethod
@@ -59,7 +59,7 @@ class NNPLightningSigmoidModel(pl.LightningModule):
             return parser        
           
         def configure_optimizers(self):
-            optimizer = torch.optim.Adam(self.parameters(), lr=1e-5)
+            optimizer = torch.optim.Adam(self.parameters(), lr=self.learning_rate)
             return optimizer
         
         def forward(self, species, coordinates):

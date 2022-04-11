@@ -1,5 +1,6 @@
 from argparse import ArgumentParser
 import os
+from tracemalloc import start
 import torch
 import pytorch_lightning as pl
 import torchani
@@ -45,10 +46,10 @@ class NNPLightningSigmoidModelDF(pl.LightningModule):
             torch.nn.Linear(30, 1)
             )
             self.mse = torch.nn.MSELoss(reduction='none')
-
+            self.start_force_training_epoch = start_force_training_epoch
             self.nn = torchani.ANIModel([self.H_network, self.C_network, self.S_network])
             self.model = torchani.nn.Sequential(aev_computer, self.nn)
-
+            self.learning_rate = learning_rate
             self.force_coefficient = force_coefficient
         
         @staticmethod
@@ -59,7 +60,7 @@ class NNPLightningSigmoidModelDF(pl.LightningModule):
             return parser        
           
         def configure_optimizers(self):
-            optimizer = torch.optim.Adam(self.parameters(), lr=1e-5)
+            optimizer = torch.optim.Adam(self.parameters(), lr=self.learning_rate)
             return optimizer
         
         def forward(self, species, coordinates):
@@ -73,8 +74,8 @@ class NNPLightningSigmoidModelDF(pl.LightningModule):
             num_atoms = (species >= 0).sum(dim=1, dtype=true_energies.dtype)
             energies = self.forward(species, coordinates)
             energy_loss = (self.mse(energies, true_energies) / num_atoms.sqrt()).mean()
-            if self.current_epoch >= 2:   
-                torch.set_grad_enabled(True)
+            if self.current_epoch >= self.start_force_training_epoch:   
+              
                 true_forces = batch['forces'].float()
                 forces = -torch.autograd.grad(energies.sum(), coordinates, create_graph=True, retain_graph=True)[0]
                 force_loss = (self.mse(true_forces, forces).sum(dim=(1, 2)) / num_atoms).mean()
@@ -86,14 +87,15 @@ class NNPLightningSigmoidModelDF(pl.LightningModule):
             return loss.float()
 
         def validation_step(self, val_batch, val_batch_idx):
+            torch.set_grad_enabled(True)
             species = val_batch['species']
             coordinates = val_batch['coordinates'].float().requires_grad_(True)
             true_energies = val_batch['energies'].float()
             num_atoms = (species >= 0).sum(dim=1, dtype=true_energies.dtype)
             energies = self.forward(species, coordinates)
             energy_loss = (self.mse(energies, true_energies) / num_atoms.sqrt()).mean()
-            if self.current_epoch >= 2:  
-                torch.set_grad_enabled(True)
+            if self.current_epoch >= self.start_force_training_epoch:  
+                
                 true_forces = val_batch['forces'].float()
                 forces = -torch.autograd.grad(energies.sum(), coordinates, create_graph=True, retain_graph=True)[0]
                 force_loss = (self.mse(true_forces, forces).sum(dim=(1, 2)) / num_atoms).mean()
