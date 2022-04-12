@@ -95,7 +95,7 @@ class NNPLightningSigmoidModelDF(pl.LightningModule):
             energies = self.forward(species, coordinates)
             energy_loss = (self.mse(energies, true_energies) / num_atoms.sqrt()).mean()
             if self.current_epoch >= self.start_force_training_epoch:  
-                
+
                 true_forces = val_batch['forces'].float()
                 forces = -torch.autograd.grad(energies.sum(), coordinates, create_graph=True, retain_graph=True)[0]
                 force_loss = (self.mse(true_forces, forces).sum(dim=(1, 2)) / num_atoms).mean()
@@ -109,8 +109,6 @@ class NNPLightningSigmoidModelDF(pl.LightningModule):
             return loss.float()
 
 def cli_main():
-    pl.seed_everything(1234)
-
     # ------------
     # args
     # ------------
@@ -137,7 +135,8 @@ def cli_main():
     # ------------
     # training
     # ------------
-    trainer = pl.Trainer.from_argparse_args(args, gpus=1, max_epochs=10000)
+    trainer = pl.Trainer.from_argparse_args(args, gpus=1, max_epochs=10000, auto_lr_find=True, gradient_clip_val=0.1)
+    trainer.tune(nnp,data)
     trainer.fit(nnp, data)
 
     # ------------
