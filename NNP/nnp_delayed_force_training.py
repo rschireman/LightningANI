@@ -105,7 +105,7 @@ class NNPLightningSigmoidModelDF(pl.LightningModule):
                 loss = energy_loss
                 self.log('val_energy_loss', energy_loss)
             
-            # torch.save(self.nn.state_dict(), "./nnp.pt")    
+            # torch.save(self.nn.state_dict(), "nnp.pt")    
             return loss.float()
 
 def cli_main():
