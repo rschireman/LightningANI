@@ -11,8 +11,8 @@ class NNPDataModule(pl.LightningDataModule):
             super().__init__()
             
             """
-            @todo remove device='cuda:0' from tensors so unit tests will pass. 
-            @body use_cuda_extension=True requires all tensors in datamodule to be on the same device
+            TODO: remove device='cuda:0' from tensors so unit tests will pass. 
+            use_cuda_extension=True requires all tensors in datamodule to be on the same device
             """
             self.Rcr = 5.2000e+00
             self.Rca = 3.5000e+00
