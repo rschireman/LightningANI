@@ -12,38 +12,35 @@ from NNP.nnp_data_module import NNPDataModule
 class NNPLightningSigmoidModelDF(pl.LightningModule):
         def __init__(self, force_coefficient: int = 10, learning_rate: float=1e-4, aev_dim: int=1, aev_computer: torchani.AEVComputer=None, start_force_training_epoch: int=0):
             super().__init__()
-
+            self.log('learning_rate',self.hparams.learning_rate)
             self.H_network = torch.nn.Sequential(
-            torch.nn.Sigmoid(),
-            torch.nn.Linear(240,30),
-            torch.nn.Sigmoid(),
-            torch.nn.Linear(30,30),
-            torch.nn.Sigmoid(),
-            torch.nn.Linear(30,30),
-            torch.nn.Sigmoid(),
-            torch.nn.Linear(30, 1)
+                torch.nn.Linear(aev_dim, 160),
+                torch.nn.CELU(0.1),
+                torch.nn.Linear(160, 128),
+                torch.nn.CELU(0.1),
+                torch.nn.Linear(128, 96),
+                torch.nn.CELU(0.1),
+                torch.nn.Linear(96, 1)
             )
 
             self.C_network = torch.nn.Sequential(
-            torch.nn.Sigmoid(),
-            torch.nn.Linear(240,30),
-            torch.nn.Sigmoid(),
-            torch.nn.Linear(30,30),
-            torch.nn.Sigmoid(),
-            torch.nn.Linear(30,30),
-            torch.nn.Sigmoid(),
-            torch.nn.Linear(30, 1)
+                torch.nn.Linear(aev_dim, 160),
+                torch.nn.CELU(0.1),
+                torch.nn.Linear(160, 112),
+                torch.nn.CELU(0.1),
+                torch.nn.Linear(112, 96),
+                torch.nn.CELU(0.1),
+                torch.nn.Linear(96, 1)
             )
 
             self.S_network = torch.nn.Sequential(
-            torch.nn.Sigmoid(),
-            torch.nn.Linear(240,30),
-            torch.nn.Sigmoid(),
-            torch.nn.Linear(30,30),
-            torch.nn.Sigmoid(),
-            torch.nn.Linear(30,30),
-            torch.nn.Sigmoid(),
-            torch.nn.Linear(30, 1)
+                torch.nn.Linear(aev_dim, 160),
+                torch.nn.CELU(0.1),
+                torch.nn.Linear(160, 112),
+                torch.nn.CELU(0.1),
+                torch.nn.Linear(112, 96),
+                torch.nn.CELU(0.1),
+                torch.nn.Linear(96, 1)
             )
             self.mse = torch.nn.MSELoss(reduction='none')
             self.start_force_training_epoch = start_force_training_epoch
