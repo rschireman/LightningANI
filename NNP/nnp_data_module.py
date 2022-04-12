@@ -10,7 +10,10 @@ class NNPDataModule(pl.LightningDataModule):
         def __init__(self, data_dir: str = "./", batch_size: int = 32):
             super().__init__()
             
-
+            """
+            TODO: remove device='cuda:0' from tensors so unit tests will pass. 
+            use_cuda_extension=True requires all tensors in datamodule to be on the same device
+            """
             self.Rcr = 5.2000e+00
             self.Rca = 3.5000e+00
             self.EtaR = torch.tensor([1.6000000e+01], device='cuda:0')
