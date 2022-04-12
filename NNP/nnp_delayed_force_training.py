@@ -10,7 +10,7 @@ import wandb
 from NNP.nnp_data_module import NNPDataModule
 
 class NNPLightningSigmoidModelDF(pl.LightningModule):
-        def __init__(self, force_coefficient: int = 10, learning_rate: float=1e-4, aev_dim: int=1, aev_computer: torchani.AEVComputer=None, start_force_training_epoch: int=0):
+        def __init__(self, force_coefficient: int = 10, learning_rate: float=1e-6, aev_dim: int=1, aev_computer: torchani.AEVComputer=None, start_force_training_epoch: int=0):
             super().__init__()
             
             self.H_network = torch.nn.Sequential(
@@ -53,7 +53,7 @@ class NNPLightningSigmoidModelDF(pl.LightningModule):
         @staticmethod
         def add_model_specific_args(parent_parser):
             parser = ArgumentParser(parents=[parent_parser], add_help=False)
-            parser.add_argument('--learning_rate', type=float, default=0.0001)
+            parser.add_argument('--learning_rate', type=float, default=1e-6)
             parser.add_argument('--start_force_training_epoch', type=int, default=0)
             return parser        
           
@@ -96,7 +96,6 @@ class NNPLightningSigmoidModelDF(pl.LightningModule):
 
                 true_forces = val_batch['forces'].float()
                 forces = -torch.autograd.grad(energies.sum(), coordinates, create_graph=True, retain_graph=True)[0]
-                print(forces)
                 force_loss = (self.mse(true_forces, forces).sum(dim=(1, 2)) / num_atoms).mean()
                 loss = energy_loss + self.force_coefficient * force_loss
                 self.log('val_force_loss', force_loss)
