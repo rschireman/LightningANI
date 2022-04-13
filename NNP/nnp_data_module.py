@@ -26,7 +26,7 @@ class NNPDataModule(pl.LightningDataModule):
 
             self.species_order = ['H',"C","S"]
             self.num_species = len(self.species_order)
-            self.aev_computer = torchani.AEVComputer(self.Rcr, self.Rca, self.EtaR, self.ShfR, self.EtaA, self.Zeta, self.ShfA, self.ShfZ, self.num_species, use_cuda_extension=True)
+            self.aev_computer = torchani.AEVComputer(self.Rcr, self.Rca, self.EtaR, self.ShfR, self.EtaA, self.Zeta, self.ShfA, self.ShfZ, self.num_species)
             
             
             self.data_dir = data_dir
