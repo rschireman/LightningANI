@@ -129,7 +129,7 @@ def cli_main():
     # model
     # ------------
     nnp = NNPLightningSigmoidModelDF(learning_rate=args.learning_rate, aev_computer=aev_computer, aev_dim=aev_dim, start_force_training_epoch=args.start_force_training_epoch)
-
+ 
     # ------------
     # training
     # ------------
