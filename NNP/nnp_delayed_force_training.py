@@ -84,9 +84,9 @@ class NNPLightningSigmoidModelDF(pl.LightningModule):
                 force_loss = (self.mse(true_forces, forces).sum(dim=(1, 2)) / num_atoms).mean()
                 loss = energy_loss + self.force_coefficient * force_loss
                 self.log('val_force_loss', force_loss)
-            else:
-                loss = energy_loss
-                self.log('val_energy_loss', energy_loss)        
+            
+            loss = energy_loss
+            self.log('val_energy_loss', energy_loss)        
             return loss.float()
 
         def validation_step(self, val_batch, val_batch_idx):
@@ -103,9 +103,9 @@ class NNPLightningSigmoidModelDF(pl.LightningModule):
                 force_loss = (self.mse(true_forces, forces).sum(dim=(1, 2)) / num_atoms).mean()
                 loss = energy_loss + self.force_coefficient * force_loss
                 self.log('val_force_loss', force_loss)
-            else:
-                loss = energy_loss
-                self.log('val_energy_loss', energy_loss)
+            
+            loss = energy_loss
+            self.log('val_energy_loss', energy_loss)
             
             torch.save(self.nn.state_dict(), "nnp.pt")    
             return loss.float()
