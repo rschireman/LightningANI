@@ -78,15 +78,16 @@ class NNPLightningSigmoidModelDF(pl.LightningModule):
             num_atoms = (species >= 0).sum(dim=1, dtype=true_energies.dtype)
             energies = self.forward(species, coordinates)
             energy_loss = (self.mse(energies, true_energies) / num_atoms.sqrt()).mean()
+            self.log('energy_loss', energy_loss)        
             if self.current_epoch >= self.start_force_training_epoch:                
                 true_forces = batch['forces'].float()
                 forces = -torch.autograd.grad(energies.sum(), coordinates, create_graph=True, retain_graph=True)[0]
                 force_loss = (self.mse(true_forces, forces).sum(dim=(1, 2)) / num_atoms).mean()
                 loss = energy_loss + self.force_coefficient * force_loss
                 self.log('force_loss', force_loss)
-            
-            loss = energy_loss
-            self.log('energy_loss', energy_loss)        
+            else:
+                loss = energy_loss
+
             return loss.float()
 
         def validation_step(self, val_batch, val_batch_idx):
@@ -97,15 +98,15 @@ class NNPLightningSigmoidModelDF(pl.LightningModule):
             num_atoms = (species >= 0).sum(dim=1, dtype=true_energies.dtype)
             energies = self.forward(species, coordinates)
             energy_loss = (self.mse(energies, true_energies) / num_atoms.sqrt()).mean()
+            self.log('val_energy_loss', energy_loss)
             if self.current_epoch >= self.start_force_training_epoch:  
                 true_forces = val_batch['forces'].float()
                 forces = -torch.autograd.grad(energies.sum(), coordinates, create_graph=True, retain_graph=True)[0]
                 force_loss = (self.mse(true_forces, forces).sum(dim=(1, 2)) / num_atoms).mean()
                 loss = energy_loss + self.force_coefficient * force_loss
                 self.log('val_force_loss', force_loss)
-            
-            loss = energy_loss
-            self.log('val_energy_loss', energy_loss)
+            else:
+                loss = energy_loss
             
             torch.save(self.nn.state_dict(), "nnp.pt")    
             return loss.float()
