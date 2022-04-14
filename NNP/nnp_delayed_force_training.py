@@ -83,10 +83,10 @@ class NNPLightningSigmoidModelDF(pl.LightningModule):
                 forces = -torch.autograd.grad(energies.sum(), coordinates, create_graph=True, retain_graph=True)[0]
                 force_loss = (self.mse(true_forces, forces).sum(dim=(1, 2)) / num_atoms).mean()
                 loss = energy_loss + self.force_coefficient * force_loss
-                self.log('val_force_loss', force_loss)
+                self.log('force_loss', force_loss)
             
             loss = energy_loss
-            self.log('val_energy_loss', energy_loss)        
+            self.log('energy_loss', energy_loss)        
             return loss.float()
 
         def validation_step(self, val_batch, val_batch_idx):
