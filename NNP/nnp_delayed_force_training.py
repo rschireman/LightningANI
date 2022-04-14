@@ -14,36 +14,40 @@ from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 class NNPLightningSigmoidModelDF(pl.LightningModule):
         def __init__(self, force_coefficient: int = 10, learning_rate: float=1e-6, aev_dim: int=1, aev_computer: torchani.AEVComputer=None, start_force_training_epoch: int=0):
             super().__init__()
-            
             self.H_network = torch.nn.Sequential(
-                torch.nn.Linear(aev_dim, 160),
-                torch.nn.CELU(0.1),
-                torch.nn.Linear(160, 128),
-                torch.nn.CELU(0.1),
-                torch.nn.Linear(128, 96),
-                torch.nn.CELU(0.1),
-                torch.nn.Linear(96, 1)
+                torch.nn.Sigmoid(),
+                torch.nn.Linear(240,30),
+                torch.nn.Sigmoid(),
+                torch.nn.Linear(30,30),
+                torch.nn.Sigmoid(),
+                torch.nn.Linear(30,30),
+                torch.nn.Sigmoid(),
+                torch.nn.Linear(30, 1)
             )
 
             self.C_network = torch.nn.Sequential(
-                torch.nn.Linear(aev_dim, 160),
-                torch.nn.CELU(0.1),
-                torch.nn.Linear(160, 112),
-                torch.nn.CELU(0.1),
-                torch.nn.Linear(112, 96),
-                torch.nn.CELU(0.1),
-                torch.nn.Linear(96, 1)
+                torch.nn.Sigmoid(),
+                torch.nn.Linear(240,30),
+                torch.nn.Sigmoid(),
+                torch.nn.Linear(30,30),
+                torch.nn.Sigmoid(),
+                torch.nn.Linear(30,30),
+                torch.nn.Sigmoid(),
+                torch.nn.Linear(30, 1)
             )
 
             self.S_network = torch.nn.Sequential(
-                torch.nn.Linear(aev_dim, 160),
-                torch.nn.CELU(0.1),
-                torch.nn.Linear(160, 112),
-                torch.nn.CELU(0.1),
-                torch.nn.Linear(112, 96),
-                torch.nn.CELU(0.1),
-                torch.nn.Linear(96, 1)
+                torch.nn.Sigmoid(),
+                torch.nn.Linear(240,30),
+                torch.nn.Sigmoid(),
+                torch.nn.Linear(30,30),
+                torch.nn.Sigmoid(),
+                torch.nn.Linear(30,30),
+                torch.nn.Sigmoid(),
+                torch.nn.Linear(30, 1)
             )
+            
+
             self.mse = torch.nn.MSELoss(reduction='none')
             self.start_force_training_epoch = start_force_training_epoch
             self.nn = torchani.ANIModel([self.H_network, self.C_network, self.S_network])
