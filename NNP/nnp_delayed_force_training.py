@@ -9,6 +9,7 @@ from pytorch_lightning.loggers import WandbLogger
 import wandb
 from NNP.nnp_data_module import NNPDataModule
 from pytorch_lightning.callbacks import ModelCheckpoint
+from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 
 class NNPLightningSigmoidModelDF(pl.LightningModule):
         def __init__(self, force_coefficient: int = 10, learning_rate: float=1e-6, aev_dim: int=1, aev_computer: torchani.AEVComputer=None, start_force_training_epoch: int=0):
@@ -133,7 +134,8 @@ def cli_main():
     # training
     # ------------
     checkpoint_callback = ModelCheckpoint(dirpath="./runs", save_top_k=20, monitor="val_force_loss")
-    trainer = pl.Trainer.from_argparse_args(args, gpus=1, max_epochs=10000, callbacks=[checkpoint_callback], auto_lr_find=True)
+    early_stopping = EarlyStopping(monitor="val_force_loss", mode="min", patience=100)
+    trainer = pl.Trainer.from_argparse_args(args, gpus=1, max_epochs=10000, callbacks=[checkpoint_callback, early_stopping], auto_lr_find=True)
     trainer.tune(nnp, data)
     trainer.fit(nnp, data)
 
