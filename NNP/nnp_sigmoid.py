@@ -106,6 +106,7 @@ def cli_main():
     parser.add_argument('--batch_size', default=32, type=int)
     parser.add_argument('--data_dir', type=str, default="")
     parser.add_argument('--force_coefficient', type=float, default=10)
+    parser.add_argument('--use_cuda_extension', type=bool, default=False)
     parser = pl.Trainer.add_argparse_args(parser)
     parser = NNPLightningSigmoidModel.add_model_specific_args(parser)
     args = parser.parse_args()
@@ -113,7 +114,7 @@ def cli_main():
     # ------------
     # data
     # ------------
-    data = NNPDataModule(data_dir=args.data_dir, batch_size=args.batch_size)
+    data = NNPDataModule(data_dir=args.data_dir, batch_size=args.batch_size, use_cuda_extension = args.use_cuda_extension)
     aev_dim = data.get_aev_dim()
     aev_computer = data.aev_computer
     

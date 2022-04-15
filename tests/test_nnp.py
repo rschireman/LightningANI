@@ -2,7 +2,7 @@ from pytorch_lightning import Trainer, seed_everything
 from NNP.nnp import NNPLightningModel
 from NNP.nnp_data_module import NNPDataModule
 from NNP.nnp_sigmoid import NNPLightningSigmoidModel
-from NNP.nnp_delayed_force_training import NNPLightningSigmoidModelDF
+from NNP.nnp_delayed_force_training import NNPLightningModelDF
 
 def test_nnp():
     seed_everything(1234)
@@ -27,6 +27,6 @@ def test_nnp_sigmoid_df():
     data = NNPDataModule(data_dir="BTBT-NPT-300K-and-100K.h5", batch_size=32)
     aev_dim = data.get_aev_dim()
     aev_computer = data.aev_computer
-    model = NNPLightningSigmoidModelDF(aev_computer=aev_computer, aev_dim=aev_dim,learning_rate=1e-6)
+    model = NNPLightningModelDF(aev_computer=aev_computer, aev_dim=aev_dim,learning_rate=1e-6)
     trainer = Trainer(max_epochs=1)
     assert data is not None and model is not None and trainer is not None

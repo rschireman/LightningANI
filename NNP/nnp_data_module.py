@@ -7,7 +7,7 @@ import torchani.data
 
 
 class NNPDataModule(pl.LightningDataModule):
-        def __init__(self, data_dir: str = "./", batch_size: int = 32):
+        def __init__(self, data_dir: str = "./", batch_size: int = 32, use_cuda_extension: bool = False):
             super().__init__()
             
             """
@@ -23,10 +23,10 @@ class NNPDataModule(pl.LightningDataModule):
             self.EtaA = torch.tensor([8.0000000e+00],device='cuda:0')
             self.ShfA = torch.tensor([9.0000000e-01, 1.5500000e+00, 2.2000000e+00, 2.8500000e+00],device='cuda:0')
 
-
+            self.use_cuda_extension = use_cuda_extension
             self.species_order = ['H',"C","S"]
             self.num_species = len(self.species_order)
-            self.aev_computer = torchani.AEVComputer(self.Rcr, self.Rca, self.EtaR, self.ShfR, self.EtaA, self.Zeta, self.ShfA, self.ShfZ, self.num_species)
+            self.aev_computer = torchani.AEVComputer(self.Rcr, self.Rca, self.EtaR, self.ShfR, self.EtaA, self.Zeta, self.ShfA, self.ShfZ, self.num_species, self.use_cuda_extension)
             
             
             self.data_dir = data_dir

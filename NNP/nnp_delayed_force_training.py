@@ -11,43 +11,43 @@ from NNP.nnp_data_module import NNPDataModule
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 
-class NNPLightningSigmoidModelDF(pl.LightningModule):
+class NNPLightningModelDF(pl.LightningModule):
         def __init__(self, force_coefficient: int = 10, learning_rate: float=1e-6, aev_dim: int=1, aev_computer: torchani.AEVComputer=None, start_force_training_epoch: int=0):
             super().__init__()
+            
             self.H_network = torch.nn.Sequential(
-                torch.nn.Sigmoid(),
+                torch.nn.Tanh(),
                 torch.nn.Linear(240,30),
-                torch.nn.Sigmoid(),
+                torch.nn.Tanh(),
                 torch.nn.Linear(30,30),
-                torch.nn.Sigmoid(),
+                torch.nn.Tanh(),
                 torch.nn.Linear(30,30),
-                torch.nn.Sigmoid(),
+                torch.nn.Tanh(),
                 torch.nn.Linear(30, 1)
             )
 
             self.C_network = torch.nn.Sequential(
-                torch.nn.Sigmoid(),
+                torch.nn.Tanh(),
                 torch.nn.Linear(240,30),
-                torch.nn.Sigmoid(),
+                torch.nn.Tanh(),
                 torch.nn.Linear(30,30),
-                torch.nn.Sigmoid(),
+                torch.nn.Tanh(),
                 torch.nn.Linear(30,30),
-                torch.nn.Sigmoid(),
+                torch.nn.Tanh(),
                 torch.nn.Linear(30, 1)
             )
 
             self.S_network = torch.nn.Sequential(
-                torch.nn.Sigmoid(),
+                torch.nn.Tanh(),
                 torch.nn.Linear(240,30),
-                torch.nn.Sigmoid(),
+                torch.nn.Tanh(),
                 torch.nn.Linear(30,30),
-                torch.nn.Sigmoid(),
+                torch.nn.Tanh(),
                 torch.nn.Linear(30,30),
-                torch.nn.Sigmoid(),
+                torch.nn.Tanh(),
                 torch.nn.Linear(30, 1)
             )
             
-
             self.mse = torch.nn.MSELoss(reduction='none')
             self.start_force_training_epoch = start_force_training_epoch
             self.nn = torchani.ANIModel([self.H_network, self.C_network, self.S_network])
@@ -65,7 +65,8 @@ class NNPLightningSigmoidModelDF(pl.LightningModule):
           
         def configure_optimizers(self):
             optimizer = torch.optim.Adam(self.parameters(), lr=self.learning_rate)
-            return optimizer
+            Adam_scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, factor=0.5, patience=10, threshold=0, verbose=True)
+            return {"optimizer": optimizer, "lr_scheduler": Adam_scheduler, "monitor": "val_force_loss"}
         
         def forward(self, species, coordinates):
             _, predicted_energies = self.model((species, coordinates))
@@ -77,6 +78,7 @@ class NNPLightningSigmoidModelDF(pl.LightningModule):
             true_energies = batch['energies'].float()
             num_atoms = (species >= 0).sum(dim=1, dtype=true_energies.dtype)
             energies = self.forward(species, coordinates)
+            print(energies)
             energy_loss = (self.mse(energies, true_energies) / num_atoms.sqrt()).mean()
             self.log('energy_loss', energy_loss)        
             if self.current_epoch >= self.start_force_training_epoch:                
@@ -119,8 +121,9 @@ def cli_main():
     parser.add_argument('--batch_size', default=32, type=int)
     parser.add_argument('--data_dir', type=str, default="")
     parser.add_argument('--force_coefficient', type=float, default=10)
+    parser.add_argument('--use_cuda_extension', type=bool, default=False)
     parser = pl.Trainer.add_argparse_args(parser)
-    parser = NNPLightningSigmoidModelDF.add_model_specific_args(parser)
+    parser = NNPLightningModelDF.add_model_specific_args(parser)
     args = parser.parse_args()
     
     # ------------
@@ -133,13 +136,15 @@ def cli_main():
     # ------------
     # model
     # ------------
-    nnp = NNPLightningSigmoidModelDF(learning_rate=args.learning_rate, aev_computer=aev_computer, aev_dim=aev_dim, start_force_training_epoch=args.start_force_training_epoch)
+
+    
+    nnp = NNPLightningModelDF(learning_rate=args.learning_rate, aev_computer=aev_computer, aev_dim=aev_dim, start_force_training_epoch=args.start_force_training_epoch)
  
     # ------------
     # training
     # ------------
     checkpoint_callback = ModelCheckpoint(dirpath="./runs", save_top_k=20, monitor="val_force_loss")
-    early_stopping = EarlyStopping(monitor="val_force_loss", mode="min", patience=100)
+    early_stopping = EarlyStopping(monitor="val_force_loss", mode="min", patience=1000)
     trainer = pl.Trainer.from_argparse_args(args, gpus=1, max_epochs=10000, callbacks=[checkpoint_callback, early_stopping])
     trainer.fit(nnp, data)
 
