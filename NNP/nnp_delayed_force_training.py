@@ -55,8 +55,9 @@ class NNPLightningModelDF(pl.LightningModule):
             self.nn = torchani.ANIModel([self.H_network, self.C_network, self.S_network])
             self.model = torchani.nn.Sequential(aev_computer, self.nn)
             self.learning_rate = learning_rate
-            self.log('learning_rate',self.learning_rate)
+            self.log('learning_rate', learning_rate)
             self.force_coefficient = force_coefficient
+            self.log('force_coefficient', force_coefficient)
         
         @staticmethod
         def add_model_specific_args(parent_parser):
