@@ -1,11 +1,11 @@
 <div align="center">    
  
-# Your Project Name     
+# ANI-NNP  
 
-[![Paper](http://img.shields.io/badge/paper-arxiv.1001.2234-B31B1B.svg)](https://www.nature.com/articles/nature14539)
-[![Conference](http://img.shields.io/badge/NeurIPS-2019-4b44ce.svg)](https://papers.nips.cc/book/advances-in-neural-information-processing-systems-31-2018)
-[![Conference](http://img.shields.io/badge/ICLR-2019-4b44ce.svg)](https://papers.nips.cc/book/advances-in-neural-information-processing-systems-31-2018)
-[![Conference](http://img.shields.io/badge/AnyConference-year-4b44ce.svg)](https://papers.nips.cc/book/advances-in-neural-information-processing-systems-31-2018)  
+<!-- [![Paper](http://img.shields.io/badge/paper-arxiv.1001.2234-B31B1B.svg)](https://www.nature.com/articles/nature14539) -->
+<!-- [![Conference](http://img.shields.io/badge/NeurIPS-2019-4b44ce.svg)](https://papers.nips.cc/book/advances-in-neural-information-processing-systems-31-2018) -->
+<!-- [![Conference](http://img.shields.io/badge/ICLR-2019-4b44ce.svg)](https://papers.nips.cc/book/advances-in-neural-information-processing-systems-31-2018) -->
+<!-- [![Conference](http://img.shields.io/badge/AnyConference-year-4b44ce.svg)](https://papers.nips.cc/book/advances-in-neural-information-processing-systems-31-2018)   -->
 <!--
 ARXIV   
 [![Paper](http://img.shields.io/badge/arxiv-math.co:1480.1111-B31B1B.svg)](https://www.nature.com/articles/nature14539)
@@ -19,13 +19,13 @@ Conference
 </div>
  
 ## Description   
-What it does   
+Pytorch Lightning template for creating neural network potentials (NNP) with torchANI 
 
 ## How to run   
 First, install dependencies   
 ```bash
 # clone project   
-git clone https://github.com/YourGithubName/deep-learning-project-template
+git clone git@github.com:rschireman/ANI-NNP-pl.git
 
 # install project   
 cd deep-learning-project-template 
@@ -38,28 +38,30 @@ pip install -r requirements.txt
 cd project
 
 # run module (example: mnist as your main contribution)   
-python lit_classifier_main.py    
+python nnp_delayed_force_training.py --data_dir /path/to/dataset    
 ```
 
 ## Imports
 This project is setup as a package which means you can now easily import any file into any other file like so:
 ```python
-from project.datasets.mnist import mnist
-from project.lit_classifier_main import LitClassifier
 from pytorch_lightning import Trainer
+from NNP.nnp_delayed_force_training import NNPLightningModelDF
+from NNP.nnp import NNPDataModule
+import os
+import wandb
+from pytorch_lightning.loggers import WandbLogger
+import numpy as np
 
-# model
-model = LitClassifier()
-
-# data
-train, val, test = mnist()
-
-# train
-trainer = Trainer()
-trainer.fit(model, train, val)
-
-# test using the best model!
-trainer.test(test_dataloaders=test)
+wandb.init(project="BTBT-NPT-rocm-pl-batch_size-sweep")
+wandb.run.name = "batch_size = 512"
+wandb.run.save()
+wandb_logger = WandbLogger()
+data = NNPDataModule(data_dir="BTBT-NPT-300K-and-100K.h5", batch_size=512)
+aev_dim = data.get_aev_dim()
+aev_computer = data.aev_computer
+model = NNPLightningModelDF(aev_computer=aev_computer, aev_dim=aev_dim,learning_rate=1e-5,force_coefficient=10,batch_size=512)
+trainer = Trainer(max_epochs=10000,gpus=1,logger=wandb_logger)
+trainer.fit(model,data)
 ```
 
 ### Citation   
