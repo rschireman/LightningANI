@@ -3,8 +3,8 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='NNP',
-    version='0.0.0',
+    name='NNP-pl',
+    version='0.0.1',
     description='Describe Your Cool Project',
     author='Ray Schireman',
     author_email='',

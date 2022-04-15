@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04, macOS-10.15, windows-2019]
+        os: [ubuntu-20.04, windows-2019]
         python-version: [3.8]
 
     # Timeout: https://stackoverflow.com/a/59076067/4521646
@@ -31,10 +31,10 @@ jobs:
         python-version: ${{ matrix.python-version }}
 
     # Github Actions: Run step on specific OS: https://stackoverflow.com/a/57948488/4521646
-    - name: Setup macOS
-      if: runner.os == 'macOS'
-      run: |
-        brew install libomp  # https://github.com/pytorch/pytorch/issues/20030
+    # - name: Setup macOS
+    #   if: runner.os == 'macOS'
+    #   run: |
+    #     brew install libomp  # https://github.com/pytorch/pytorch/issues/20030
 
     # Note: This uses an internal pip API and may not always work
     # https://github.com/actions/cache/blob/master/examples.md#multiple-oss-in-a-workflow
