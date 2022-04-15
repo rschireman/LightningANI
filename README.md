@@ -28,7 +28,7 @@ First, install dependencies
 git clone git@github.com:rschireman/ANI-NNP-pl.git
 
 # install project   
-cd deep-learning-project-template 
+cd ANI-NNP-pl
 pip install -e .   
 pip install -r requirements.txt
  ```   
