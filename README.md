@@ -1,6 +1,6 @@
 <div align="center">    
  
-# ANI-NNP  
+# LIghtningANI
 
 <!-- [![Paper](http://img.shields.io/badge/paper-arxiv.1001.2234-B31B1B.svg)](https://www.nature.com/articles/nature14539) -->
 <!-- [![Conference](http://img.shields.io/badge/NeurIPS-2019-4b44ce.svg)](https://papers.nips.cc/book/advances-in-neural-information-processing-systems-31-2018) -->
@@ -64,7 +64,7 @@ trainer = Trainer(max_epochs=10000,gpus=1,logger=wandb_logger)
 trainer.fit(model,data)
 ```
 
-### Citation   
+<!-- ### Citation   
 ```
 @article{YourName,
   title={Your Title},
@@ -72,4 +72,4 @@ trainer.fit(model,data)
   journal={Location},
   year={Year}
 }
-```   
+```    -->
