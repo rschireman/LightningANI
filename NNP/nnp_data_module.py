@@ -28,8 +28,8 @@ class NNPDataModule(pl.LightningDataModule):
         self.data_dir = data_dir
 
         self.training, self.validation = torchani.data.load(self.data_dir, additional_properties=('forces',)).species_to_indices(self.species_order).shuffle().split(0.8, None)
-        self.training = torch.utils.data.DataLoader(list(self.training), batch_size=batch_size,  num_workers=2, pin_memory=True)
-        self.validation = torch.utils.data.DataLoader(list(self.validation), batch_size=batch_size, num_workers=2, pin_memory=True)
+        self.training = torch.utils.data.DataLoader(list(self.training), batch_size=batch_size,  num_workers=0, pin_memory=True)
+        self.validation = torch.utils.data.DataLoader(list(self.validation), batch_size=batch_size, num_workers=0, pin_memory=True)
 
 
     def train_dataloader(self):
