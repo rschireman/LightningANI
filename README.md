@@ -37,7 +37,7 @@ pip install -r requirements.txt
 # module folder
 cd project
 
-# run module (example: mnist as your main contribution)   
+# run module 
 python nnp_delayed_force_training.py --data_dir /path/to/dataset    
 ```
 
