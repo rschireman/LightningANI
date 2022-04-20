@@ -23,7 +23,10 @@ class NNPDataModule(pl.LightningDataModule):
         self.use_cuda_extension = use_cuda_extension
         self.species_order = ['H',"C","S"]
         self.num_species = len(self.species_order)
-        self.aev_computer = torchani.AEVComputer(self.Rcr, self.Rca, self.EtaR, self.ShfR, self.EtaA, self.Zeta, self.ShfA, self.ShfZ, self.num_species, use_cuda_extension=self.use_cuda_extension)
+        """
+        @todo can't use cuda extension when vibrational analysis is called
+        """
+        self.aev_computer = torchani.AEVComputer(self.Rcr, self.Rca, self.EtaR, self.ShfR, self.EtaA, self.Zeta, self.ShfA, self.ShfZ, self.num_species)
         
         self.data_dir = data_dir
 
