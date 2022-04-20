@@ -1,12 +1,8 @@
 from argparse import ArgumentParser
-import os
-from tracemalloc import start
 import torch
 import pytorch_lightning as pl
 import torchani
 import torchani.data
-from pytorch_lightning.loggers import WandbLogger
-import wandb
 from NNP.nnp_data_module import NNPDataModule
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
