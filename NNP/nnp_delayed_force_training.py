@@ -139,7 +139,7 @@ def cli_main():
     # ------------
     parser = ArgumentParser()
     parser.add_argument('--data_dir', type=str, default="")
-    parser.add_argument('--force_coefficient', type=float, default=10)
+    parser.add_argument('--force_coefficient', type=float, default=1)
     parser.add_argument('--use_cuda_extension', type=bool, default=False)
     parser.add_argument('--batch_size', default=32, type=int)
     parser = pl.Trainer.add_argparse_args(parser)
