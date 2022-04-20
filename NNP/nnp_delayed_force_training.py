@@ -12,7 +12,7 @@ from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 
 class NNPLightningModelDF(pl.LightningModule):
-        def __init__(self, force_coefficient: int = 10, learning_rate: float=1e-6, batch_size: int=32, aev_dim: int=1, aev_computer: torchani.AEVComputer=None, start_force_training_epoch: int=0):
+        def __init__(self, force_coefficient: int = 1, learning_rate: float=1e-6, batch_size: int=32, aev_dim: int=1, aev_computer: torchani.AEVComputer=None, start_force_training_epoch: int=0):
             super().__init__()
             
             self.H_network = torch.nn.Sequential(
@@ -163,7 +163,7 @@ def cli_main():
     # ------------
     checkpoint_callback = ModelCheckpoint(dirpath="runs", save_top_k=20, monitor="val_force_loss")
     early_stopping = EarlyStopping(monitor="val_force_loss", mode="min", patience=100)
-    trainer = pl.Trainer.from_argparse_args(args, gpus=1, max_epochs=10000, callbacks=[checkpoint_callback, early_stopping],gradient_clip_val=0.1)
+    trainer = pl.Trainer.from_argparse_args(args, gpus=1, max_epochs=1000, callbacks=[checkpoint_callback, early_stopping])
     trainer.fit(nnp, data)
 
     # ------------
