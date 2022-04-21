@@ -48,7 +48,7 @@ class VibrationalAnalysis(Callback):
             cell = torch.tensor(molecule.get_cell()).float().to('cuda:0')
             pbc = torch.tensor([True,True,True]).to('cuda:0')
             """
-            @todo add species as input to callback
+            @todo #4 add species as input to callback
             """
             species = torch.tensor([[0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	2,	2,	2,	2,
             ]],dtype=torch.long).to('cuda:0')
@@ -71,6 +71,7 @@ class VibrationalAnalysis(Callback):
             epoch_list.append(int(ckpt_model.split("=")[1].replace("-step","")))	
             vib_error_list.append(vib_error)
             print(vib_error_list)
+            print(epoch_list)
           
 
         fig, ax = plt.subplots()
