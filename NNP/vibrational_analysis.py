@@ -40,6 +40,8 @@ class VibrationalAnalysis(Callback):
                 dyn.run(fmax=0.05,steps=1000)
             except RuntimeError:
                 vib_error_list.append(0.0)
+                epoch_list.append(int(ckpt_model.split("=")[1].replace("-step","")))
+                continue
             
 
             species = torch.tensor(molecule.get_atomic_numbers(), dtype=torch.long).unsqueeze(0)
