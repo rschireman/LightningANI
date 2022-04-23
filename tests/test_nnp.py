@@ -1,8 +1,8 @@
 from pytorch_lightning import Trainer, seed_everything
-from NNP.nnp import NNPLightningModel
-from NNP.nnp_data_module import NNPDataModule
-from NNP.nnp_sigmoid import NNPLightningSigmoidModel
-from NNP.nnp_delayed_force_training import NNPLightningModelDF
+from lightning_ani.nnp import NNPLightningModel
+from lightning_ani.nnp_data_module import NNPDataModule
+from lightning_ani.nnp_sigmoid import NNPLightningSigmoidModel
+from lightning_ani.nnp_delayed_force_training import NNPLightningModelDF
 
 def test_nnp():
     seed_everything(1234)
