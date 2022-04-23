@@ -64,9 +64,9 @@ class NNPLightningModelDF(pl.LightningModule):
           
         def configure_optimizers(self):
             optimizer = torch.optim.Adam(self.parameters(), lr=self.learning_rate)
-            # Adam_scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, factor=0.5, patience=10, threshold=0, verbose=True)
-            # return {"optimizer": optimizer, "lr_scheduler": Adam_scheduler, "monitor": "val_force_loss"}
-            return optimizer
+            Adam_scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, factor=0.5, patience=3, threshold=0, verbose=True)
+            return {"optimizer": optimizer, "lr_scheduler": Adam_scheduler, "monitor": "val_force_loss"}
+            # return optimizer
         
         def forward(self, species, coordinates):
             _, predicted_energies = self.model((species, coordinates))
@@ -158,8 +158,9 @@ def cli_main():
     # training
     # ------------
     checkpoint_callback = ModelCheckpoint(dirpath="runs", save_top_k=20, monitor="val_force_loss")
-    early_stopping = EarlyStopping(monitor="val_force_loss", mode="min", patience=100)
-    trainer = pl.Trainer.from_argparse_args(args, gpus=1, max_epochs=1000, callbacks=[checkpoint_callback, early_stopping])
+    early_stopping = EarlyStopping(monitor="val_force_loss", mode="min", patience=10)
+    trainer = pl.Trainer.from_argparse_args(args, gpus=1, max_epochs=1000, callbacks=[checkpoint_callback, early_stopping],auto_lr_find=True,auto_scale_batch_size='binsearch')
+    trainer.tune(nnp, data)
     trainer.fit(nnp, data)
 
     # ------------
