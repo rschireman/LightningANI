@@ -7,11 +7,11 @@ import torchani.data
 
 
 class NNPDataModule(pl.LightningDataModule):
-    def __init__(self, data_dir: str = "./", batch_size: int=32, use_cuda_extension: bool = False):
+    def __init__(self, data_dir: str = "./", batch_size: int=32, use_cuda_extension: bool = False, Rcr: float=5.200):
         super().__init__()
         
 
-        self.Rcr = 5.2000e+00
+        self.Rcr = Rcr
         self.Rca = 3.5000e+00
         self.EtaR = torch.tensor([1.6000000e+01])
         self.ShfR = torch.tensor([9.0000000e-01, 1.1687500e+00, 1.4375000e+00, 1.7062500e+00, 1.9750000e+00, 2.2437500e+00, 2.5125000e+00, 2.7812500e+00, 3.0500000e+00, 3.3187500e+00, 3.5875000e+00, 3.8562500e+00, 4.1250000e+00, 4.3937500e+00, 4.6625000e+00, 4.9312500e+00])
