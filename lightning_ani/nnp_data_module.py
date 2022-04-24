@@ -7,10 +7,9 @@ import torchani.data
 from torch import Tensor
 
 class NNPDataModule(pl.LightningDataModule):
-    def __init__(self, data_dir: str = "./", batch_size: int=32, use_cuda_extension: bool = False, Rcr: float=5.200, Rca: float=3.50, EtaR: Tensor=[16.00]):
+    def __init__(self, data_dir: str = "./", batch_size: int=32, use_cuda_extension: bool = False, Rcr: float=5.200, Rca: float=3.50, EtaR: Tensor=16.00):
         super().__init__()
-        
-
+    
         self.Rcr = Rcr
         self.Rca = Rca
         self.EtaR = EtaR
