@@ -9,7 +9,7 @@ setup(
     author='Ray Schireman',
     author_email='',
     # REPLACE WITH YOUR OWN GITHUB PROJECT LINK
-    url='https://github.com/rschireman/ANI-NNP-pl',
+    url='https://github.com/rschireman/LightningANI',
     install_requires=['pytorch-lightning', 'torchani'],
     packages=find_packages(),
 )
