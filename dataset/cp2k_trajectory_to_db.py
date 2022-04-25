@@ -11,11 +11,11 @@ def listToString(s):
     return (str1.join(s))
 
 
-def cp2k_trajectory_to_db(data_dir):
-
-    os.system("rm *.db")
+def cp2k_trajectory_to_db(data_dir, db_name):
 
     data_dict = {}
+    db = ase.db.connect(db_name)
+    
 
     coord_frames_list = glob.glob(data_dir + "*-pos-1*")
 
@@ -29,11 +29,12 @@ def cp2k_trajectory_to_db(data_dir):
     for force_energy_frame in force_energy_frames_list:
         force_energy_data = ase.io.read(force_energy_frame, index=":")
         data_dict[force_energy_frame] = force_energy_data
+        db.metadata = {'Force Data': force_energy_frame}
 
 
-    db = ase.db.connect("btbt_0_1_2_300K.db")
-# print(len(db))
-# db.metadata = {"Simulation Overview": "P1 structure of BTBT with 2 molecules", "Steps": 100000, "Timestep": 0.2}
+    for key,value in data_dict.items():
+        print(value)
+        
 
 # for i,frame in enumerate(coord_frames):
 
@@ -51,4 +52,4 @@ def cp2k_trajectory_to_db(data_dir):
 #     db.write(frame, cp2k_energy=energy,cp2k_forces=np.array2string(forces),symbols=listToString(symbols))
 
 if __name__ == "__main__":
-    cp2k_trajectory_to_db(data_dir="/home/ray/Desktop/BTBT_300K_83K_100K_60K_NNP/btbt_0_1_2_100K_60k/")
+    cp2k_trajectory_to_db(data_dir="C:\\Users\\ray\\Dropbox\\ML\\datasets\\BTBT_300K_83K_100K_60K_NNP\\", db_name="test.db")

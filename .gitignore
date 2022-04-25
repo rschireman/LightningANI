@@ -134,3 +134,4 @@ MNIST
 
 # dataset files
 dataset/*.h5
+*.db
