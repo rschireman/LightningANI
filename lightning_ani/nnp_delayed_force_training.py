@@ -109,7 +109,6 @@ class NNPLightningModelDF(pl.LightningModule):
             else:
                 loss = energy_loss
             
-            torch.save(self.nn.state_dict(), "nnp.pt")    
             return loss.float()
 
         def test_step(self, test_batch, test_batch_idx):
