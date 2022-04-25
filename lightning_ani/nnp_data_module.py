@@ -4,21 +4,25 @@ import torch
 import pytorch_lightning as pl
 import torchani
 import torchani.data
-
+from typing import List
 
 class NNPDataModule(pl.LightningDataModule):
-    def __init__(self, data_dir: str = "./", batch_size: int=32, use_cuda_extension: bool = False):
-        super().__init__()
+    def __init__(self, data_dir: str = "./", batch_size: int=32, use_cuda_extension: bool = False, Rcr: float=5.200, Rca: float=3.50, EtaR: List=[16.00], 
+    ShfR: List=[9.0000000e-01, 1.1687500e+00, 1.4375000e+00, 1.7062500e+00, 1.9750000e+00, 2.2437500e+00, 2.5125000e+00, 2.7812500e+00, 3.0500000e+00, 3.3187500e+00, 3.5875000e+00, 3.8562500e+00, 4.1250000e+00, 4.3937500e+00, 4.6625000e+00, 4.9312500e+00],
+    Zeta: List=[32.00], ShfZ: List=[1.9634954e-01, 5.8904862e-01, 9.8174770e-01, 1.3744468e+00, 1.7671459e+00, 2.1598449e+00, 2.5525440e+00, 2.9452431e+00],
+    EtaA: List=[8.0000000e+00], ShfA: List=[9.0000000e-01, 1.5500000e+00, 2.2000000e+00, 2.8500000e+00]
+    ):
         
-
-        self.Rcr = 5.2000e+00
-        self.Rca = 3.5000e+00
-        self.EtaR = torch.tensor([1.6000000e+01])
-        self.ShfR = torch.tensor([9.0000000e-01, 1.1687500e+00, 1.4375000e+00, 1.7062500e+00, 1.9750000e+00, 2.2437500e+00, 2.5125000e+00, 2.7812500e+00, 3.0500000e+00, 3.3187500e+00, 3.5875000e+00, 3.8562500e+00, 4.1250000e+00, 4.3937500e+00, 4.6625000e+00, 4.9312500e+00])
-        self.Zeta = torch.tensor([3.2000000e+01])
-        self.ShfZ = torch.tensor([1.9634954e-01, 5.8904862e-01, 9.8174770e-01, 1.3744468e+00, 1.7671459e+00, 2.1598449e+00, 2.5525440e+00, 2.9452431e+00])
-        self.EtaA = torch.tensor([8.0000000e+00])
-        self.ShfA = torch.tensor([9.0000000e-01, 1.5500000e+00, 2.2000000e+00, 2.8500000e+00])
+        super().__init__()
+    
+        self.Rcr = Rcr
+        self.Rca = Rca
+        self.EtaR = torch.tensor(EtaR)
+        self.ShfR = torch.tensor(ShfR)
+        self.Zeta = torch.tensor(Zeta)
+        self.ShfZ = torch.tensor(ShfZ)
+        self.EtaA = torch.tensor(EtaA)
+        self.ShfA = torch.tensor(ShfA)
 
         self.use_cuda_extension = use_cuda_extension
         self.species_order = ['H',"C","S"]
@@ -33,7 +37,6 @@ class NNPDataModule(pl.LightningDataModule):
         self.training, self.validation = torchani.data.load(self.data_dir, additional_properties=('forces',)).species_to_indices(self.species_order).shuffle().split(0.8, None)
         self.training = torch.utils.data.DataLoader(list(self.training), batch_size=batch_size,  num_workers=2, pin_memory=True)
         self.validation = torch.utils.data.DataLoader(list(self.validation), batch_size=batch_size, num_workers=2, pin_memory=True)
-
 
     def train_dataloader(self):
         return self.training
