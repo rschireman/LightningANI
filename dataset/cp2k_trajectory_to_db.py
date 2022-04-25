@@ -1,3 +1,4 @@
+import enum
 import glob
 import ase.db
 import ase.io
@@ -18,23 +19,16 @@ def cp2k_trajectory_to_db(data_dir, db_name):
     
 
     coord_frames_list = glob.glob(data_dir + "*-pos-1*")
-
+    coord_data = []
     for coord_frames in coord_frames_list:
-        coord_data = ase.io.read(coord_frames, index=":")
-        data_dict[coord_frames] = coord_data
-
+        coord_data.append(ase.io.read(coord_frames, index=":"))
+        db.metadata = {'Coord Data': coord_frames_list}
         
     force_energy_frames_list = glob.glob(data_dir + "*-frc-1*")
-
+    force_energy_data = []
     for force_energy_frame in force_energy_frames_list:
-        force_energy_data = ase.io.read(force_energy_frame, index=":")
-        data_dict[force_energy_frame] = force_energy_data
-        db.metadata = {'Force Data': force_energy_frame}
-
-
-    for key,value in data_dict.items():
-        print(value)
-        
+        force_energy_data.append(ase.io.read(force_energy_frame, index=":"))
+        db.metadata = {'Force Data': force_energy_frames_list}
 
 # for i,frame in enumerate(coord_frames):
 
