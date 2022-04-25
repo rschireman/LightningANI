@@ -2,11 +2,12 @@ import h5py
 import numpy as np
 import ase.db
 
+def md_to_h5(h5_path, ase_db_dir):
 
-hf = h5py.File('BTBT-NPT-300K-and-100K.h5','w')
-db = ase.db.connect("btbt_0_1_2_100K.db")
-db1 = ase.db.connect("btbt_0_1_2_300K.db")
-print(len(db), len(db1))
+    hf = h5py.File(h5_path,'w')
+    db = ase.db.connect("btbt_0_1_2_100K.db")
+    db1 = ase.db.connect("btbt_0_1_2_300K.db")
+    print(len(db), len(db1))
 
 np_energies = np.empty(len(db)+len(db1) -1 )
 

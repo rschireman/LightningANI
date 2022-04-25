@@ -131,3 +131,6 @@ MNIST
 # pytorch checkpoints
 *.pt
 *.ckpt
+
+# dataset files
+dataset/*.h5
