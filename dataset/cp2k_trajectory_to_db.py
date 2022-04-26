@@ -16,7 +16,7 @@ def cp2k_trajectory_to_db(data_dir, db_name):
 
     data_dict = {}
     db = ase.db.connect(db_name)
-    
+    bohr_to_angstrom = np.array(0.529177249)
 
     coord_frames_list = glob.glob(data_dir + "*-pos-1*")
     coord_data = []
@@ -29,6 +29,15 @@ def cp2k_trajectory_to_db(data_dir, db_name):
     for force_energy_frame in force_energy_frames_list:
         force_energy_data.append(ase.io.read(force_energy_frame, index=":"))
         db.metadata = {'Force Data': force_energy_frames_list}
+
+    for i,database in enumerate(coord_data):
+        for j,frame in enumerate(database):
+            symbols = frame.get_chemical_symbols()
+            energy = force_energy_data[i][j].info['E']
+            forces = force_energy_data[i][j].positions
+            forces = forces / bohr_to_angstrom
+            db.write(frame, cp2k_energy=energy,cp2k_forces=np.array2string(forces),symbols=listToString(symbols))
+        
 
 # for i,frame in enumerate(coord_frames):
 
