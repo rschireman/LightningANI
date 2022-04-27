@@ -137,3 +137,4 @@ dataset/*.h5
 *.db
 *.db.lock
 *.db-journal
+*.h5

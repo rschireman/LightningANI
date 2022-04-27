@@ -8,13 +8,13 @@ def md_to_h5(h5_path, ase_db_path):
     db = ase.db.connect(ase_db_path)
     print("Number of Structures in Database: ", len(db))
 
-    np_energies = np.empty(len(db) - 1)
+    np_energies = np.empty(len(db))
     # TODO 
     # Get number of atoms and declare arrays  
     # hardcode number of atoms for now
-    np_forces = np.empty([len(db) - 1 , 48, 3])
-    np_coords = np.empty([len(db) - 1 , 48, 3])
-    np_cell = np.empty([len(db) - 1 , 3, 3])
+    np_forces = np.empty([len(db), 48, 3])
+    np_coords = np.empty([len(db), 48, 3])
+    np_cell = np.empty([len(db), 3, 3])
 
     for i,row in enumerate(db.select()):
         symbols = row.get('symbols')  
