@@ -2,7 +2,7 @@ import h5py
 import numpy as np
 import ase.db
 
-def md_to_h5(h5_path, ase_db_path):
+def db_to_h5(h5_path, ase_db_path):
 
     hf = h5py.File(h5_path,'w')
     db = ase.db.connect(ase_db_path)
@@ -44,4 +44,4 @@ def md_to_h5(h5_path, ase_db_path):
 
 
 if __name__ == "__main__":
-    md_to_h5(h5_path = "test.h5", ase_db_path="test.db")
+    db_to_h5(h5_path = "test.h5", ase_db_path="test.db")
