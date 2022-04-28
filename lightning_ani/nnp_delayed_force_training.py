@@ -158,7 +158,7 @@ def cli_main():
     # ------------
     checkpoint_callback = ModelCheckpoint(dirpath="runs", save_top_k=20, monitor="val_force_loss")
     early_stopping = EarlyStopping(monitor="val_force_loss", mode="min", patience=75)
-    trainer = pl.Trainer.from_argparse_args(args, gpus=1, max_epochs=1000, callbacks=[checkpoint_callback, early_stopping])
+    trainer = pl.Trainer.from_argparse_args(args, gpus=1, max_epochs=5, callbacks=[checkpoint_callback, early_stopping])
     trainer.fit(nnp, data)
 
     # ------------
@@ -166,6 +166,14 @@ def cli_main():
     # ------------
     trainer.test(ckpt_path="best", dataloaders=data.validation)
 
+    # ------------
+    # Saving Model for usage with openmm
+    # ------------
+    # Render the compute graph to a TorchScript module
+    module = torch.jit.script(nnp)
+    # Serialize the compute graph to a file
+    module.save('model.pt')
+   
 
 if __name__ == '__main__':
     cli_main()            
