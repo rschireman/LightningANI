@@ -2,11 +2,12 @@ import torch
 import torchani
 from typing import Tuple, Optional
 from torch import Tensor
-from openmmtorch import TorchForce
 from ase.io import read,write
-from openmm.app import *
-from openmm import *
-from openmm.unit import *
+import openmm as mm
+import openmm.app as app
+import openmm.unit as unit
+from openmmml import MLPotential
+import unittest
 
 class CustomModule(torch.nn.Module):
 
@@ -46,3 +47,7 @@ coordinates = torch.from_numpy(molecule.get_positions()).unsqueeze(0).requires_g
 
 energies, forces, hessians = custom_model(species, coordinates, True, True)
 print(energies,forces,hessians)
+
+pdb = app.PDBFile('btbt_0_1_2.pdb')
+ff = app.ForceField('amber14-all.xml', 'amber14/tip3pfb.xml')
+potential = MLPotential('compiled_model.pt')
