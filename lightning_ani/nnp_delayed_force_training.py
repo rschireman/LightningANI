@@ -13,7 +13,7 @@ class NNPLightningModelDF(pl.LightningModule):
             
             self.H_network = torch.nn.Sequential(
                 torch.nn.Tanh(),
-                torch.nn.Linear(240,30),
+                torch.nn.Linear(aev_dim,30),
                 torch.nn.Tanh(),
                 torch.nn.Linear(30,30),
                 torch.nn.Tanh(),
@@ -24,7 +24,7 @@ class NNPLightningModelDF(pl.LightningModule):
 
             self.C_network = torch.nn.Sequential(
                 torch.nn.Tanh(),
-                torch.nn.Linear(240,30),
+                torch.nn.Linear(aev_dim,30),
                 torch.nn.Tanh(),
                 torch.nn.Linear(30,30),
                 torch.nn.Tanh(),
@@ -35,7 +35,7 @@ class NNPLightningModelDF(pl.LightningModule):
 
             self.S_network = torch.nn.Sequential(
                 torch.nn.Tanh(),
-                torch.nn.Linear(240,30),
+                torch.nn.Linear(aev_dim,30),
                 torch.nn.Tanh(),
                 torch.nn.Linear(30,30),
                 torch.nn.Tanh(),
