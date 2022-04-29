@@ -172,7 +172,7 @@ def cli_main():
     # Render the compute graph to a TorchScript module
     module = torch.jit.script(nnp)
     # Serialize the compute graph to a file
-    module.save('model.pt')
+    torch.jit.save(module, 'compiled_model.pt')
    
 
 if __name__ == '__main__':
