@@ -5,7 +5,7 @@ from torch import Tensor
 # from openmmtorch import TorchForce
 from ase.io import read,write
 
-molecule = read("C:\\Users\\ray\\Dropbox\\ML\\datasets\\BTBT_300K_83K_100K_60K_NNP\\btbt_0_1_2.pdb")
+molecule = read("/home/ray/Dropbox/ML/datasets/BTBT_300K_83K_100K_60K_NNP/btbt_0_1_2.pdb")
 print(molecule)
 species = torch.tensor([[0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	2,	2,	2,	2]],dtype=torch.long).to('cuda:0')
 
