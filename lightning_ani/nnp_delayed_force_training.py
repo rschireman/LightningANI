@@ -69,7 +69,7 @@ class NNPLightningModelDF(pl.LightningModule):
             # return optimizer
         
         def forward(self, species, coordinates):
-            _, predicted_energies = self.model((species, coordinates))
+            _,predicted_energies = self.model((species, coordinates))
             return predicted_energies
 
         def training_step(self, batch, batch_idx):
