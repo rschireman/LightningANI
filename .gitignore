@@ -136,3 +136,6 @@ MNIST
 dataset/*.h5
 *.db
 *.pdb
+*.db.lock
+*.db-journal
+*.h5
