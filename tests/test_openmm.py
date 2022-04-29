@@ -2,8 +2,11 @@ import torch
 import torchani
 from typing import Tuple, Optional
 from torch import Tensor
-# from openmmtorch import TorchForce
+from openmmtorch import TorchForce
 from ase.io import read,write
+from openmm.app import *
+from openmm import *
+from openmm.unit import *
 
 class CustomModule(torch.nn.Module):
 
@@ -37,17 +40,9 @@ molecule = read("btbt_0_1_2.pdb")
 custom_model = CustomModule()
 species = torch.tensor(molecule.get_atomic_numbers(), dtype=torch.long).unsqueeze(0)
 print(species)
+masses = torchani.utils.get_atomic_masses(species).to('cuda:0')
 species = torch.tensor([[0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	2,	2,	2,	2]],dtype=torch.long)
 coordinates = torch.from_numpy(molecule.get_positions()).unsqueeze(0).requires_grad_(True).float()
 
 energies, forces, hessians = custom_model(species, coordinates, True, True)
 print(energies,forces,hessians)
-# species = torch.tensor(molecule.get_atomic_numbers(), dtype=torch.long).unsqueeze(0)
-# coordinates = torch.from_numpy(molecule.get_positions()).unsqueeze(0).requires_grad_(True).float().to('cuda:0')
-# masses = torchani.utils.get_atomic_masses(species).to('cuda:0')
-# cell = torch.tensor(molecule.get_cell()).float().to('cuda:0')
-# pbc = torch.tensor([True,True,True]).to('cuda:0')
-
-# species = torch.tensor([0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	2,	2,	2,	2],dtype=torch.long).to('cuda:0')
-# loaded_compiled_model = 
-# energies_single_jit = loaded_compiled_model((species, coordinates)).energies
