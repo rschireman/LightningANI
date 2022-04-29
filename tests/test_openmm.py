@@ -49,5 +49,6 @@ energies, forces, hessians = custom_model(species, coordinates, True, True)
 print(energies,forces,hessians)
 
 pdb = app.PDBFile('btbt_0_1_2.pdb')
-ff = app.ForceField('amber14-all.xml', 'amber14/tip3pfb.xml')
-potential = MLPotential('compiled_model.pt')
+potential = MLPotential('ani2x')
+mlAtoms = [a.index for a in next(pdb.topology.chains()).atoms()]
+system = potential.createSystem(pdb.topology)
