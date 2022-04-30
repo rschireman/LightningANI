@@ -68,8 +68,8 @@ class NNPLightningModelDF(pl.LightningModule):
             return {"optimizer": optimizer, "lr_scheduler": Adam_scheduler, "monitor": "val_force_loss"}
             # return optimizer
         
-        def forward(self, species, coordinates):
-            _, predicted_energies = self.model((species, coordinates))
+        def forward(self, species, coordinates, pbc, cell):
+            _, predicted_energies = self.model((species, coordinates), pbc=pbc, cell=cell)
             return predicted_energies
 
         def training_step(self, batch, batch_idx):
@@ -77,7 +77,7 @@ class NNPLightningModelDF(pl.LightningModule):
             coordinates = batch['coordinates'].float().requires_grad_(True)
             true_energies = batch['energies'].float()
             num_atoms = (species >= 0).sum(dim=1, dtype=true_energies.dtype)
-            energies = self.forward(species, coordinates)
+            energies = self.forward(species, coordinates, None, None)
             energy_loss = (self.mse(energies, true_energies) / num_atoms.sqrt()).mean()
             self.log('energy_loss', energy_loss)        
             if self.current_epoch >= self.start_force_training_epoch:                
@@ -97,7 +97,7 @@ class NNPLightningModelDF(pl.LightningModule):
             coordinates = val_batch['coordinates'].float().requires_grad_(True)
             true_energies = val_batch['energies'].float()
             num_atoms = (species >= 0).sum(dim=1, dtype=true_energies.dtype)
-            energies = self.forward(species, coordinates)
+            energies = self.forward(species, coordinates, None, None)
             energy_loss = (self.mse(energies, true_energies) / num_atoms.sqrt()).mean()
             self.log('val_energy_loss', energy_loss)
             if self.current_epoch >= self.start_force_training_epoch:  
@@ -117,7 +117,7 @@ class NNPLightningModelDF(pl.LightningModule):
             coordinates = test_batch['coordinates'].float().requires_grad_(True)
             true_energies = test_batch['energies'].float()
             num_atoms = (species >= 0).sum(dim=1, dtype=true_energies.dtype)
-            energies = self.forward(species, coordinates)
+            energies = self.forward(species, coordinates, None, None)
             energy_loss = (self.mse(energies, true_energies) / num_atoms.sqrt()).mean()
             self.log('test_energy_loss', energy_loss)
             true_forces = test_batch['forces'].float()
@@ -158,13 +158,19 @@ def cli_main():
     # ------------
     checkpoint_callback = ModelCheckpoint(dirpath="runs", save_top_k=20, monitor="val_force_loss")
     early_stopping = EarlyStopping(monitor="val_force_loss", mode="min", patience=75)
-    trainer = pl.Trainer.from_argparse_args(args, gpus=1, max_epochs=1000, callbacks=[checkpoint_callback, early_stopping])
+    trainer = pl.Trainer.from_argparse_args(args, gpus=1, max_epochs=5, callbacks=[checkpoint_callback, early_stopping])
     trainer.fit(nnp, data)
 
     # ------------
     # testing
     # ------------
     trainer.test(ckpt_path="best", dataloaders=data.validation)
+    
+    # ------------
+    # Compile and save model for deployment
+    # ------------
+    compiled_model = torch.jit.script(nnp)
+    torch.jit.save(compiled_model, 'compiled_model.pt')
 
 
 if __name__ == '__main__':
