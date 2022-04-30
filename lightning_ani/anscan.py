@@ -14,3 +14,17 @@ dyn = BFGSLineSearch(molecule)
 dyn.run()
 print("Optimized Structure: ")
 print(molecule.get_total_energy())
+species = torch.tensor(molecule.get_atomic_numbers(), dtype=torch.long).unsqueeze(0)
+masses = torchani.utils.get_atomic_masses(species)
+species = torch.tensor([[0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	2,	2,	2,	2,]],dtype=torch.long)
+coordinates = torch.from_numpy(molecule.get_positions()).unsqueeze(0).requires_grad_(True).float()
+
+cell = torch.tensor(molecule.get_cell()).float()
+pbc = torch.tensor([True,True,True])
+energies = loaded_compiled_model(species, coordinates,cell=cell, pbc=pbc)
+hessian = torchani.utils.hessian(coordinates,energies=energies)
+
+freq, modes, fconstants, rmasses = torchani.utils.vibrational_analysis(masses, hessian, mode_type='MWN')
+print(modes[71])
+
+# Note that the normal modes are the COLUMNS of the eigenvectors matrix
