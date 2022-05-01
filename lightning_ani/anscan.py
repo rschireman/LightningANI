@@ -11,7 +11,7 @@ ase_calc = torchani.ase.Calculator(model=loaded_compiled_model, species=["H", "C
 molecule.calc = ase_calc
 
 dyn = BFGSLineSearch(molecule)
-dyn.run()
+dyn.run(fmax=1e-3)
 print("Optimized Structure: ")
 print(molecule.get_total_energy())
 species = torch.tensor(molecule.get_atomic_numbers(), dtype=torch.long).unsqueeze(0)
@@ -27,6 +27,6 @@ hessian = torchani.utils.hessian(coordinates,energies=energies)
 freq, modes, fconstants, rmasses = torchani.utils.vibrational_analysis(masses, hessian, mode_type='MWN', unit='cm^-1')
 torch.set_printoptions(precision=3, sci_mode=False)
 print(freq)
-print(modes.shape)
+print(modes)
 
 # Note that the normal modes are the COLUMNS of the eigenvectors matrix
