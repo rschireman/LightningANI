@@ -25,6 +25,7 @@ energies = loaded_compiled_model(species, coordinates,cell=cell, pbc=pbc)
 hessian = torchani.utils.hessian(coordinates,energies=energies)
 
 freq, modes, fconstants, rmasses = torchani.utils.vibrational_analysis(masses, hessian, mode_type='MWN', unit='cm^-1')
+torch.set_printoptions(precision=3, sci_mode=False)
 print(freq)
 print(modes.shape)
 
