@@ -25,6 +25,6 @@ energies = loaded_compiled_model(species, coordinates,cell=cell, pbc=pbc)
 hessian = torchani.utils.hessian(coordinates,energies=energies)
 
 freq, modes, fconstants, rmasses = torchani.utils.vibrational_analysis(masses, hessian, mode_type='MWN')
-print(modes[71])
+print(modes.shape)
 
 # Note that the normal modes are the COLUMNS of the eigenvectors matrix
