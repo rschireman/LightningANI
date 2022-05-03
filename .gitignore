@@ -139,3 +139,9 @@ dataset/*.h5
 *.db.lock
 *.db-journal
 *.h5
+
+# ase files
+*.xyz
+vib/**
+
+*.png
