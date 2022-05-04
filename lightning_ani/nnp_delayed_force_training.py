@@ -109,7 +109,7 @@ class NNPLightningModelDF(pl.LightningModule):
             else:
                 loss = energy_loss
             
-            return loss.float()
+            
 
         def test_step(self, test_batch, test_batch_idx):
             torch.set_grad_enabled(True)
@@ -126,7 +126,7 @@ class NNPLightningModelDF(pl.LightningModule):
             loss = energy_loss + self.force_coefficient * force_loss
             self.log('test_force_loss', force_loss)
      
-            return loss.float()
+            
 
 def cli_main():
     # ------------
