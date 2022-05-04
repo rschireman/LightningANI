@@ -1,4 +1,5 @@
 from operator import imod
+from turtle import up
 import torchani
 from ase.optimize import BFGSLineSearch
 from ase.io import read, write
@@ -9,7 +10,7 @@ import matplotlib.pyplot as plt
 from numpy import linalg as LA
 import numpy.polynomial.polynomial as poly
 
-mode = 14
+mode = 140
 
 loaded_compiled_model = torch.jit.load('compiled_model.pt')
 print(loaded_compiled_model)
@@ -45,9 +46,9 @@ torch.set_printoptions(precision=5, sci_mode=False)
 # Note that the normal modes are the COLUMNS of the eigenvectors matrix
 print(freq)
 
-polOrder =  10
+polOrder =  3
 # best results if numpoints is set to half the total displacements
-numPoints = 20
+numPoints = 3
 stepsize = 1
 freq_cm =  freq[mode-1]
 
@@ -165,15 +166,17 @@ for x in range(len(results)-1):
 
         n+=1
     iv+=1
-   
-w, v = LA.eigh(amat)
+
+amat = amat + amat.T - np.diag(np.diag(amat))
+
+w, v = LA.eig(amat)
 w.sort()
-print(w)
+print(amat)
 
 
-t00 = 27.21*8065.5*w[0]
-t11 = 27.21*8065.5*w[1]
-t22 = 27.21*8065.5*w[2]
+t00 = 27.21*8065.5*w[1]
+t11 = 27.21*8065.5*w[2]
+t22 = 27.21*8065.5*w[3]
 
 w01 = t11-t00
-print("Fundamental Anharmonic Frequency:  ", 4*w01 , " cm-1")
+print("Fundamental Anharmonic Frequency:  ", w01 , " cm-1")
