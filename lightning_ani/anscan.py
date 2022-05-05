@@ -1,5 +1,3 @@
-from operator import imod
-from turtle import up
 import torchani
 from ase.optimize import BFGSLineSearch
 from ase.io import read, write
@@ -9,11 +7,23 @@ from ase.vibrations import Vibrations
 import matplotlib.pyplot as plt
 from numpy import linalg as LA
 import numpy.polynomial.polynomial as poly
+from nnp_delayed_force_training import NNPLightningModelDF
+from nnp_data_module import NNPDataModule
+
 
 mode = 140
 
+# data = NNPDataModule()
+# aev_dim = data.get_aev_dim()
+# print(aev_dim)
+# aev_computer = data.aev_computer
 loaded_compiled_model = torch.jit.load('compiled_model.pt')
-print(loaded_compiled_model)
+# model = NNPLightningModelDF(aev_computer=aev_computer, aev_dim=aev_dim)
+# ckpt_nnp = model.load_from_checkpoint("./runs/epoch=4-step=174.ckpt")  
+# nn = torchani.ANIModel([ckpt_nnp.H_network, ckpt_nnp.C_network, ckpt_nnp.S_network])
+# test_model = torchani.nn.Sequential(aev_computer, nn)
+
+# loaded_compiled_model = torch.load('model.pt')
 
 molecule = read("btbt_0_1_2.pdb")
 ase_calc = torchani.ase.Calculator(model=loaded_compiled_model, species=["H", "C", "S"])

@@ -1,4 +1,5 @@
 from argparse import ArgumentParser
+from typing import Tuple
 import torch
 import pytorch_lightning as pl
 import torchani
@@ -68,16 +69,19 @@ class NNPLightningModelDF(pl.LightningModule):
             return {"optimizer": optimizer, "lr_scheduler": Adam_scheduler, "monitor": "val_force_loss"}
             # return optimizer
         
-        def forward(self, species, coordinates, pbc, cell):
-            _, predicted_energies = self.model((species, coordinates), pbc=pbc, cell=cell)
+        def forward(self, input: Tuple[torch.Tensor,torch.Tensor], pbc, cell):
+            _, predicted_energies = self.model(input, pbc=pbc, cell=cell)
             return predicted_energies
 
         def training_step(self, batch, batch_idx):
             species = batch['species']
             coordinates = batch['coordinates'].float().requires_grad_(True)
             true_energies = batch['energies'].float()
+
+            input = (species, coordinates)
+
             num_atoms = (species >= 0).sum(dim=1, dtype=true_energies.dtype)
-            energies = self.forward(species, coordinates, None, None)
+            energies = self.forward(input, None, None)
             energy_loss = (self.mse(energies, true_energies) / num_atoms.sqrt()).mean()
             self.log('energy_loss', energy_loss)        
             if self.current_epoch >= self.start_force_training_epoch:                
@@ -96,8 +100,11 @@ class NNPLightningModelDF(pl.LightningModule):
             species = val_batch['species']
             coordinates = val_batch['coordinates'].float().requires_grad_(True)
             true_energies = val_batch['energies'].float()
+
+            input = (species, coordinates)
+
             num_atoms = (species >= 0).sum(dim=1, dtype=true_energies.dtype)
-            energies = self.forward(species, coordinates, None, None)
+            energies = self.forward(input, None, None)
             energy_loss = (self.mse(energies, true_energies) / num_atoms.sqrt()).mean()
             self.log('val_energy_loss', energy_loss)
             if self.current_epoch >= self.start_force_training_epoch:  
@@ -116,8 +123,11 @@ class NNPLightningModelDF(pl.LightningModule):
             species = test_batch['species']
             coordinates = test_batch['coordinates'].float().requires_grad_(True)
             true_energies = test_batch['energies'].float()
+
+            input = (species, coordinates)
+
             num_atoms = (species >= 0).sum(dim=1, dtype=true_energies.dtype)
-            energies = self.forward(species, coordinates, None, None)
+            energies = self.forward(input, None, None)
             energy_loss = (self.mse(energies, true_energies) / num_atoms.sqrt()).mean()
             self.log('test_energy_loss', energy_loss)
             true_forces = test_batch['forces'].float()
@@ -158,7 +168,7 @@ def cli_main():
     # ------------
     checkpoint_callback = ModelCheckpoint(dirpath="runs", save_top_k=20, monitor="val_force_loss")
     early_stopping = EarlyStopping(monitor="val_force_loss", mode="min", patience=100)
-    trainer = pl.Trainer.from_argparse_args(args, gpus=1, max_epochs=500, callbacks=[checkpoint_callback, early_stopping])
+    trainer = pl.Trainer.from_argparse_args(args, gpus=1, max_epochs=5, callbacks=[checkpoint_callback, early_stopping])
     trainer.fit(nnp, data)
 
     # ------------
