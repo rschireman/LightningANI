@@ -14,8 +14,9 @@ from lightning_ani.nnp_data_module import NNPDataModule
 data = NNPDataModule()
 aev_dim = data.get_aev_dim()
 aev_computer = data.aev_computer
+print(aev_dim)
 nnp = NNPLightningModelDF(aev_dim=aev_dim)
-nnp.load_from_checkpoint('runs/epoch=4-step=140.ckpt')
+nnp.load_from_checkpoint('runs/epoch=111-step=3136.ckpt')
 
 nn = torchani.ANIModel([nnp.H_network, nnp.C_network, nnp.S_network])
 model = torchani.nn.Sequential(aev_computer, nn)
@@ -42,11 +43,11 @@ molecule.calc = ase_calc
 
 
 
-# dyn = BFGSLineSearch(molecule)
-# dyn.run()
-# print("Optimized Structure: ")
-# print(molecule.get_total_energy())
-# write("opt.pdb", molecule)
+dyn = BFGSLineSearch(molecule)
+dyn.run()
+print("Optimized Structure: ")
+print(molecule.get_total_energy())
+write("opt.pdb", molecule)
 
 # vib = Vibrations(molecule)
 # vib.run()
