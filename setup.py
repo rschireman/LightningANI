@@ -3,7 +3,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='NNP-pl',
+    name='lightning_ani',
     version='0.0.1',
     description='Describe Your Cool Project',
     author='Ray Schireman',

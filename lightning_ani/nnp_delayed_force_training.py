@@ -94,7 +94,7 @@ class NNPLightningModelDF(pl.LightningModule):
                 loss = energy_loss
 
             return loss.float()
-
+        
         def validation_step(self, val_batch, val_batch_idx):
             torch.set_grad_enabled(True)
             species = val_batch['species']
@@ -168,7 +168,7 @@ def cli_main():
     # ------------
     checkpoint_callback = ModelCheckpoint(dirpath="runs", save_top_k=20, monitor="val_force_loss")
     early_stopping = EarlyStopping(monitor="val_force_loss", mode="min", patience=100)
-    trainer = pl.Trainer.from_argparse_args(args, gpus=1, max_epochs=5, callbacks=[checkpoint_callback, early_stopping])
+    trainer = pl.Trainer.from_argparse_args(args, gpus=1, max_epochs=1, callbacks=[checkpoint_callback, early_stopping])
     trainer.fit(nnp, data)
 
     # ------------
@@ -179,8 +179,8 @@ def cli_main():
     # ------------
     # Compile and save model for deployment
     # ------------
-    compiled_model = torch.jit.script(nnp)
-    torch.jit.save(compiled_model, 'compiled_model.pt')
+    compiled_model = nnp.to_torchscript(file_path="model.pt", method="script")
+    # torch.jit.save(compiled_model, 'compiled_model.pt')
 
 
 if __name__ == '__main__':
