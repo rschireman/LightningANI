@@ -9,12 +9,12 @@ from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 
 class NNPLightningModelDF(pl.LightningModule):
-        def __init__(self, force_coefficient: int = 1, learning_rate: float=1e-6, batch_size: int=32, aev_dim: int=1, aev_computer: torchani.AEVComputer=None, start_force_training_epoch: int=0):
+        def __init__(self, force_coefficient: int = 1, learning_rate: float=1e-6, batch_size: int=32, aev_dim: int=240, aev_computer: torchani.AEVComputer=None, start_force_training_epoch: int=0):
             super().__init__()
-            
+            self.aev_dim = aev_dim
             self.H_network = torch.nn.Sequential(
                 torch.nn.Tanh(),
-                torch.nn.Linear(aev_dim,30),
+                torch.nn.Linear(self.aev_dim,30),
                 torch.nn.Tanh(),
                 torch.nn.Linear(30,30),
                 torch.nn.Tanh(),
@@ -25,7 +25,7 @@ class NNPLightningModelDF(pl.LightningModule):
 
             self.C_network = torch.nn.Sequential(
                 torch.nn.Tanh(),
-                torch.nn.Linear(aev_dim,30),
+                torch.nn.Linear(self.aev_dim,30),
                 torch.nn.Tanh(),
                 torch.nn.Linear(30,30),
                 torch.nn.Tanh(),
@@ -36,7 +36,7 @@ class NNPLightningModelDF(pl.LightningModule):
 
             self.S_network = torch.nn.Sequential(
                 torch.nn.Tanh(),
-                torch.nn.Linear(aev_dim,30),
+                torch.nn.Linear(self.aev_dim,30),
                 torch.nn.Tanh(),
                 torch.nn.Linear(30,30),
                 torch.nn.Tanh(),
@@ -46,7 +46,6 @@ class NNPLightningModelDF(pl.LightningModule):
             )
 
             self.batch_size = batch_size
-            
             self.mse = torch.nn.MSELoss(reduction='none')
             self.start_force_training_epoch = start_force_training_epoch
             self.nn = torchani.ANIModel([self.H_network, self.C_network, self.S_network])
@@ -180,7 +179,6 @@ def cli_main():
     # Compile and save model for deployment
     # ------------
     compiled_model = nnp.to_torchscript(file_path="model.pt", method="script")
-    # torch.jit.save(compiled_model, 'compiled_model.pt')
 
 
 if __name__ == '__main__':

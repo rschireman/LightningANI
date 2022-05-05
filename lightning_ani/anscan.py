@@ -7,8 +7,19 @@ from ase.vibrations import Vibrations
 import matplotlib.pyplot as plt
 from numpy import linalg as LA
 import numpy.polynomial.polynomial as poly
-from nnp_delayed_force_training import NNPLightningModelDF
-from nnp_data_module import NNPDataModule
+from lightning_ani.nnp_delayed_force_training import NNPLightningModelDF
+from lightning_ani.nnp_data_module import NNPDataModule
+
+
+data = NNPDataModule()
+aev_dim = data.get_aev_dim()
+aev_computer = data.aev_computer
+nnp = NNPLightningModelDF(aev_dim=aev_dim)
+nnp.load_from_checkpoint('runs/epoch=0-step=28.ckpt')
+
+nn = torchani.ANIModel([nnp.H_network, nnp.C_network, nnp.S_network])
+model = torchani.nn.Sequential(aev_computer, nn)
+
 
 
 mode = 140
@@ -17,7 +28,7 @@ mode = 140
 # aev_dim = data.get_aev_dim()
 # print(aev_dim)
 # aev_computer = data.aev_computer
-loaded_compiled_model = torch.jit.load('model.pt')
+# loaded_compiled_model = torch.jit.load('model.pt')
 # model = NNPLightningModelDF(aev_computer=aev_computer, aev_dim=aev_dim)
 # ckpt_nnp = model.load_from_checkpoint("./runs/epoch=4-step=174.ckpt")  
 # nn = torchani.ANIModel([ckpt_nnp.H_network, ckpt_nnp.C_network, ckpt_nnp.S_network])
@@ -26,7 +37,7 @@ loaded_compiled_model = torch.jit.load('model.pt')
 # loaded_compiled_model = torch.load('model.pt')
 
 molecule = read("btbt_0_1_2.pdb")
-ase_calc = torchani.ase.Calculator(model=loaded_compiled_model, species=["H", "C", "S"])
+ase_calc = torchani.ase.Calculator(model=model, species=["H", "C", "S"])
 molecule.calc = ase_calc
 
 
