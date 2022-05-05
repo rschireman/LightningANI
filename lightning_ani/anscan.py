@@ -15,8 +15,8 @@ data = NNPDataModule()
 aev_dim = data.get_aev_dim()
 aev_computer = data.aev_computer
 print(aev_dim)
-nnp = NNPLightningModelDF(aev_dim=aev_dim)
-nnp.load_from_checkpoint('runs/epoch=111-step=3136.ckpt')
+nnp = NNPLightningModelDF(aev_dim=aev_dim).load_from_checkpoint('runs/epoch=111-step=3136.ckpt')
+
 
 nn = torchani.ANIModel([nnp.H_network, nnp.C_network, nnp.S_network])
 model = torchani.nn.Sequential(aev_computer, nn)
