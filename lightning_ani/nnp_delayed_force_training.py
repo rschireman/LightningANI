@@ -167,7 +167,7 @@ def cli_main():
     # ------------
     checkpoint_callback = ModelCheckpoint(dirpath="runs", save_top_k=20, monitor="val_force_loss")
     early_stopping = EarlyStopping(monitor="val_force_loss", mode="min", patience=100)
-    trainer = pl.Trainer.from_argparse_args(args, gpus=1, max_epochs=5, callbacks=[checkpoint_callback, early_stopping])
+    trainer = pl.Trainer.from_argparse_args(args, gpus=1, max_epochs=500, callbacks=[checkpoint_callback, early_stopping])
     trainer.fit(nnp, data)
 
     # ------------
