@@ -15,7 +15,7 @@ data = NNPDataModule()
 aev_dim = data.get_aev_dim()
 aev_computer = data.aev_computer
 nnp = NNPLightningModelDF(aev_dim=aev_dim)
-nnp.load_from_checkpoint('runs/epoch=0-step=28.ckpt')
+nnp.load_from_checkpoint('runs/epoch=4-step=140.ckpt')
 
 nn = torchani.ANIModel([nnp.H_network, nnp.C_network, nnp.S_network])
 model = torchani.nn.Sequential(aev_computer, nn)
@@ -42,11 +42,11 @@ molecule.calc = ase_calc
 
 
 
-dyn = BFGSLineSearch(molecule)
-dyn.run()
-print("Optimized Structure: ")
-print(molecule.get_total_energy())
-write("opt.pdb", molecule)
+# dyn = BFGSLineSearch(molecule)
+# dyn.run()
+# print("Optimized Structure: ")
+# print(molecule.get_total_energy())
+# write("opt.pdb", molecule)
 
 # vib = Vibrations(molecule)
 # vib.run()
@@ -59,7 +59,7 @@ coordinates = torch.from_numpy(molecule.get_positions()).unsqueeze(0).requires_g
 
 cell = torch.tensor(molecule.get_cell()).float()
 pbc = torch.tensor([True,True,True])
-energies = loaded_compiled_model((species, coordinates), cell=cell, pbc=pbc)
+energies = model((species, coordinates), cell=cell, pbc=pbc).energies
 hessian = torchani.utils.hessian(coordinates,energies=energies)
 
 freq, modes, fconstants, rmasses = torchani.utils.vibrational_analysis(masses, hessian, mode_type='MWN', unit='cm^-1')
