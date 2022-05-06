@@ -35,8 +35,8 @@ mode = 140
 # nn = torchani.ANIModel([ckpt_nnp.H_network, ckpt_nnp.C_network, ckpt_nnp.S_network])
 # test_model = torchani.nn.Sequential(aev_computer, nn)
 
-model = torch.jit.load('model.pt')
-
+model = torch.jit.load("model.pt")
+print(model)
 molecule = read("btbt_0_1_2.pdb")
 ase_calc = torchani.ase.Calculator(model=model, species=["H", "C", "S"])
 molecule.calc = ase_calc
@@ -44,7 +44,7 @@ molecule.calc = ase_calc
 
 
 dyn = BFGSLineSearch(molecule)
-dyn.run(1e-2)
+dyn.run()
 print("Optimized Structure: ")
 print(molecule.get_total_energy())
 write("opt.pdb", molecule)
