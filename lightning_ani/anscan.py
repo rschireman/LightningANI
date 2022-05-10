@@ -11,15 +11,15 @@ from lightning_ani.nnp_delayed_force_training import NNPLightningModelDF
 from lightning_ani.nnp_data_module import NNPDataModule
 
 
-# data = NNPDataModule()
-# aev_dim = data.get_aev_dim()
-# aev_computer = data.aev_computer
-# print(aev_dim)
-# nnp = NNPLightningModelDF(aev_dim=aev_dim).load_from_checkpoint('runs/epoch=111-step=3136.ckpt')
+data = NNPDataModule()
+aev_dim = data.get_aev_dim()
+aev_computer = data.aev_computer
+print(aev_dim)
+nnp = NNPLightningModelDF(aev_dim=aev_dim).load_from_checkpoint('runs/epoch=498-step=34431.ckpt')
 
 
-# nn = torchani.ANIModel([nnp.H_network, nnp.C_network, nnp.S_network])
-# model = torchani.nn.Sequential(aev_computer, nn)
+nn = torchani.ANIModel([nnp.H_network, nnp.C_network, nnp.S_network])
+model = torchani.nn.Sequential(aev_computer, nn)
 
 
 
@@ -35,8 +35,8 @@ mode = 140
 # nn = torchani.ANIModel([ckpt_nnp.H_network, ckpt_nnp.C_network, ckpt_nnp.S_network])
 # test_model = torchani.nn.Sequential(aev_computer, nn)
 
-model = torch.jit.load("model.pt")
-print(model)
+# model = torch.jit.load("model.pt")
+# print(model)
 molecule = read("btbt_0_1_2.pdb")
 ase_calc = torchani.ase.Calculator(model=model, species=["H", "C", "S"])
 molecule.calc = ase_calc
@@ -60,7 +60,7 @@ coordinates = torch.from_numpy(molecule.get_positions()).unsqueeze(0).requires_g
 
 cell = torch.tensor(molecule.get_cell()).float()
 pbc = torch.tensor([True,True,True])
-energies = model((species, coordinates), cell=cell, pbc=pbc)
+energies = model((species, coordinates), cell=cell, pbc=pbc).energies
 hessian = torchani.utils.hessian(coordinates,energies=energies)
 
 freq, modes, fconstants, rmasses = torchani.utils.vibrational_analysis(masses, hessian, mode_type='MWN', unit='cm^-1')
