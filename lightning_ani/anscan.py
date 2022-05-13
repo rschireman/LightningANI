@@ -15,7 +15,7 @@ data = NNPDataModule()
 aev_dim = data.get_aev_dim()
 aev_computer = data.aev_computer
 print(aev_dim)
-nnp = NNPLightningModelDF(aev_dim=aev_dim).load_from_checkpoint('runs/epoch=498-step=34431.ckpt')
+nnp = NNPLightningModelDF(aev_dim=aev_dim).load_from_checkpoint('runs/epoch=499-step=68500.ckpt')
 
 
 nn = torchani.ANIModel([nnp.H_network, nnp.C_network, nnp.S_network])
@@ -37,7 +37,7 @@ mode = 140
 
 # model = torch.jit.load("model.pt")
 # print(model)
-molecule = read("btbt_0_1_2.pdb")
+molecule = read("/home/ray/Desktop/btbt_0_1_2.pdb")
 ase_calc = torchani.ase.Calculator(model=model, species=["H", "C", "S"])
 molecule.calc = ase_calc
 
@@ -70,7 +70,7 @@ print(freq)
 
 polOrder =  3
 # best results if numpoints is set to half the total displacements
-numPoints = 3
+numPoints = 7
 stepsize = 1
 freq_cm =  freq[mode-1]
 
