@@ -137,6 +137,7 @@ def cli_main():
     parser.add_argument('--force_coefficient', type=float, default=1)
     parser.add_argument('--use_cuda_extension', type=bool, default=False)
     parser.add_argument('--batch_size', default=32, type=int)
+    parser.add_argument('--Rcr', default=5.6, type=float)
     parser = pl.Trainer.add_argparse_args(parser)
     parser = NNPLightningModelDF.add_model_specific_args(parser)
     args = parser.parse_args()
@@ -144,7 +145,7 @@ def cli_main():
     # ------------
     # data
     # ------------
-    data = NNPDataModule(data_dir=args.data_dir, batch_size=args.batch_size)
+    data = NNPDataModule(data_dir=args.data_dir, batch_size=args.batch_size, Rcr=args.Rcr)
     aev_dim = data.get_aev_dim()
     aev_computer = data.aev_computer
     
@@ -158,7 +159,7 @@ def cli_main():
     # ------------
     checkpoint_callback = ModelCheckpoint(dirpath="runs", save_top_k=20, monitor="val_force_loss")
     early_stopping = EarlyStopping(monitor="val_force_loss", mode="min", patience=75)
-    trainer = pl.Trainer.from_argparse_args(args, gpus=1, max_epochs=1000, callbacks=[checkpoint_callback, early_stopping])
+    trainer = pl.Trainer.from_argparse_args(args, gpus=1, callbacks=[checkpoint_callback, early_stopping])
     trainer.fit(nnp, data)
 
     # ------------
