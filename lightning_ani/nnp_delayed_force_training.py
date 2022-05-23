@@ -76,9 +76,7 @@ class NNPLightningModelDF(pl.LightningModule):
             species = batch['species']
             coordinates = batch['coordinates'].float().requires_grad_(True)
             true_energies = batch['energies'].float()
-
             input = (species, coordinates)
-
             num_atoms = (species >= 0).sum(dim=1, dtype=true_energies.dtype)
             energies = self.forward(input, None, None)
             energy_loss = (self.mse(energies, true_energies) / num_atoms.sqrt()).mean()
@@ -99,9 +97,7 @@ class NNPLightningModelDF(pl.LightningModule):
             species = val_batch['species']
             coordinates = val_batch['coordinates'].float().requires_grad_(True)
             true_energies = val_batch['energies'].float()
-
             input = (species, coordinates)
-
             num_atoms = (species >= 0).sum(dim=1, dtype=true_energies.dtype)
             energies = self.forward(input, None, None)
             energy_loss = (self.mse(energies, true_energies) / num_atoms.sqrt()).mean()
@@ -166,7 +162,7 @@ def cli_main():
     # training
     # ------------
     checkpoint_callback = ModelCheckpoint(dirpath="runs", save_top_k=20, monitor="val_force_loss")
-    trainer = pl.Trainer.from_argparse_args(args, gpus=1, max_epochs=1000, callbacks=[checkpoint_callback])
+    trainer = pl.Trainer.from_argparse_args(args, gpus=1, callbacks=[checkpoint_callback])
     trainer.fit(nnp, data)
 
     # ------------
