@@ -21,7 +21,7 @@ print(aev_dim)
 aev_computer = data.aev_computer
 
 model = NNPLightningModelDF(aev_computer=aev_computer, aev_dim=aev_dim)
-ckpt_nnp = model.load_from_checkpoint("./runs/epoch=75-step=5244.ckpt")  
+ckpt_nnp = model.load_from_checkpoint("./runs/epoch=998-step=68931.ckpt")  
 nn = torchani.ANIModel([ckpt_nnp.H_network, ckpt_nnp.C_network, ckpt_nnp.S_network])
 test_model = torchani.nn.Sequential(aev_computer, nn)
 
@@ -40,6 +40,7 @@ write("opt.pdb", molecule)
 vib = Vibrations(molecule)
 vib.run()
 vib.write_jmol()
+vib.summary()
 
 species = torch.tensor(molecule.get_atomic_numbers(), dtype=torch.long).unsqueeze(0)
 masses = torchani.utils.get_atomic_masses(species)
@@ -48,7 +49,7 @@ coordinates = torch.from_numpy(molecule.get_positions()).unsqueeze(0).requires_g
 
 cell = torch.tensor(molecule.get_cell()).float()
 pbc = torch.tensor([True,True,True])
-energies = model((species, coordinates), cell=cell, pbc=pbc).energies
+energies = model((species, coordinates), cell=cell, pbc=pbc)
 hessian = torchani.utils.hessian(coordinates,energies=energies)
 
 freq, modes, fconstants, rmasses = torchani.utils.vibrational_analysis(masses, hessian, mode_type='MWN', unit='cm^-1')
@@ -56,8 +57,8 @@ torch.set_printoptions(precision=5, sci_mode=False)
 print(freq)
 
 polOrder =  3
-numPoints = 7
-stepsize = 1
+numPoints = 10
+stepsize = 0.2
 freq_cm =  freq[mode-1]
 
 clas_sdene = (freq_cm/8065.5)*(1/27.21)
