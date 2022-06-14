@@ -16,6 +16,7 @@ class NNPDataModule(pl.LightningDataModule):
         super().__init__()
     
         self.Rcr = Rcr
+        print("Proceeding with Rcr: ", self.Rcr)
         self.Rca = Rca
         self.EtaR = torch.tensor(EtaR)
         self.ShfR = torch.tensor(ShfR)
