@@ -8,7 +8,7 @@ from ase.vibrations import Vibrations
 import matplotlib.pyplot as plt
 from numpy import linalg as LA
 import numpy.polynomial.polynomial as poly
-from lightning_ani.nnp_delayed_force_training import NNPLightningModelDF
+from lightning_ani.nnp import NNPLightningModelDF
 from lightning_ani.nnp_data_module import NNPDataModule
 
 
