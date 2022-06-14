@@ -8,7 +8,7 @@ from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 
 class NNPLightningModelDF(pl.LightningModule):
-        def __init__(self, force_coefficient: int = 1, learning_rate: float=1e-6, batch_size: int=32, aev_dim: int=1, aev_computer: torchani.AEVComputer=None, start_force_training_epoch: int=0):
+        def __init__(self, force_coefficient: int = 1, learning_rate: float=1e-6, batch_size: int=32, aev_dim: int=240, aev_computer: torchani.AEVComputer=None, start_force_training_epoch: int=0):
             super().__init__()
             
             self.H_network = torch.nn.Sequential(
@@ -66,7 +66,7 @@ class NNPLightningModelDF(pl.LightningModule):
             optimizer = torch.optim.Adam(self.parameters(), lr=self.learning_rate)
             Adam_scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, factor=0.5, patience=75, threshold=0, verbose=True)
             return {"optimizer": optimizer, "lr_scheduler": Adam_scheduler, "monitor": "val_force_loss"}
-            # return optimizer
+      
         
         def forward(self, species, coordinates):
             _, predicted_energies = self.model((species, coordinates))
