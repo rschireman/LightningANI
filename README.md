@@ -45,8 +45,8 @@ python nnp_delayed_force_training.py --data_dir /path/to/dataset
 This project is setup as a package which means you can now easily import any file into any other file like so:
 ```python
 from pytorch_lightning import Trainer
-from NNP.nnp_delayed_force_training import NNPLightningModelDF
-from NNP.nnp import NNPDataModule
+from lightning_ani.nnp import NNPLightningModel
+from lightning_ani.nnp_data_module import NNPDataModule
 import os
 import wandb
 from pytorch_lightning.loggers import WandbLogger
@@ -59,7 +59,7 @@ wandb_logger = WandbLogger()
 data = NNPDataModule(data_dir="BTBT-NPT-300K-and-100K.h5", batch_size=512)
 aev_dim = data.get_aev_dim()
 aev_computer = data.aev_computer
-model = NNPLightningModelDF(aev_computer=aev_computer, aev_dim=aev_dim,learning_rate=1e-5,force_coefficient=10,batch_size=512)
+model = NNPLightningModel(aev_computer=aev_computer, aev_dim=aev_dim,learning_rate=1e-5,force_coefficient=10,batch_size=512)
 trainer = Trainer(max_epochs=10000,gpus=1,logger=wandb_logger)
 trainer.fit(model,data)
 ```
