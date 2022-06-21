@@ -47,7 +47,6 @@ This project is setup as a package which means you can now easily import any fil
 from pytorch_lightning import Trainer
 from lightning_ani.nnp import NNPLightningModel
 from lightning_ani.nnp_data_module import NNPDataModule
-import os
 import wandb
 from pytorch_lightning.loggers import WandbLogger
 import numpy as np
