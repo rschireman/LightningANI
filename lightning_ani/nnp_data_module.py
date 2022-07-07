@@ -26,7 +26,7 @@ class NNPDataModule(pl.LightningDataModule):
         self.ShfA = torch.tensor(ShfA)
 
         self.use_cuda_extension = use_cuda_extension
-        self.species_order = ['H',"C","S"]
+        self.species_order = ['H','O']
         self.num_species = len(self.species_order)
         """
         @todo #3 can't use cuda extension when vibrational analysis is called
