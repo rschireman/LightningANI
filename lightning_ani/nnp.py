@@ -22,18 +22,7 @@ class NNPLightningModel(pl.LightningModule):
                 torch.nn.Linear(30, 1)
             )
 
-            self.C_network = torch.nn.Sequential(
-                torch.nn.Tanh(),
-                torch.nn.Linear(aev_dim,30),
-                torch.nn.Tanh(),
-                torch.nn.Linear(30,30),
-                torch.nn.Tanh(),
-                torch.nn.Linear(30,30),
-                torch.nn.Tanh(),
-                torch.nn.Linear(30, 1)
-            )
-
-            self.S_network = torch.nn.Sequential(
+            self.O_network = torch.nn.Sequential(
                 torch.nn.Tanh(),
                 torch.nn.Linear(aev_dim,30),
                 torch.nn.Tanh(),
@@ -48,7 +37,7 @@ class NNPLightningModel(pl.LightningModule):
             
             self.mse = torch.nn.MSELoss(reduction='none')
             self.start_force_training_epoch = start_force_training_epoch
-            self.nn = torchani.ANIModel([self.H_network, self.C_network, self.S_network])
+            self.nn = torchani.ANIModel([self.H_network, self.O_network])
             self.model = torchani.nn.Sequential(aev_computer, self.nn)
             self.learning_rate = learning_rate
             self.force_coefficient = force_coefficient
@@ -64,7 +53,7 @@ class NNPLightningModel(pl.LightningModule):
           
         def configure_optimizers(self):
             optimizer = torch.optim.Adam(self.parameters(), lr=self.learning_rate)
-            Adam_scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, factor=0.5, patience=75, threshold=0, verbose=True)
+            Adam_scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, factor=0.95, patience=750, threshold=0, verbose=True)
             return {"optimizer": optimizer, "lr_scheduler": Adam_scheduler, "monitor": "val_force_loss"}
       
         
