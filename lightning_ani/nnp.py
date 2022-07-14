@@ -3,7 +3,7 @@ import torch
 import pytorch_lightning as pl
 import torchani
 import torchani.data
-from lightning_ani.nnp_data_module import NNPDataModule
+from nnp_data_module import NNPDataModule
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 
