@@ -24,7 +24,7 @@ class NNPDataModule(pl.LightningDataModule):
         self.ShfZ = torch.tensor(ShfZ)
         self.EtaA = torch.tensor(EtaA)
         self.ShfA = torch.tensor(ShfA)
-
+        
         self.use_cuda_extension = use_cuda_extension
         self.species_order = ['H','O']
         self.num_species = len(self.species_order)
