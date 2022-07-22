@@ -38,15 +38,19 @@ class NNPDataModule(pl.LightningDataModule):
         self.training, self.validation = torchani.data.load(self.data_dir, additional_properties=('forces',)).species_to_indices(self.species_order).shuffle().split(0.8, None)
         self.training = torch.utils.data.DataLoader(list(self.training), batch_size=batch_size,  num_workers=2, pin_memory=True)
         self.validation = torch.utils.data.DataLoader(list(self.validation), batch_size=batch_size, num_workers=2, pin_memory=True)
+        self.train_set_size = int(0.5*len(self.validation.dataset))
+        self.valid_set_size = int(len(self.validation.dataset) - self.train_set_size)
+
+        self.valid_set, self.test_set = torch.utils.data.random_split(self.validation.dataset, [self.valid_set_size, self.train_set_size])
 
     def train_dataloader(self):
         return self.training
 
     def val_dataloader(self):
-        return self.validation
+        return torch.utils.data.DataLoader(self.valid_set)
 
     def test_dataloader(self):
-        return self.validation  
+        return torch.utils.data.DataLoader(self.test_set)
 
     def get_aev_dim(self): 
         self.aev_dim = self.aev_computer.aev_length
